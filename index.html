@@ -9,7 +9,9 @@
     <title id="sys-title">Cổng thông tin Quản trị</title>
   
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <script src="https://apis.google.com/js/api.js"></script> <script>
+    <script src="https://apis.google.com/js/api.js"></script> 
+    
+    <script>
         document.addEventListener("DOMContentLoaded", function() {
             document.getElementById('sys-title').innerText = KETNOI.TIEU_DE_TRANG;
             document.getElementById('sys-favicon').href = KETNOI.LINK_LOGO;
@@ -65,7 +67,7 @@
         .window-container { background: #ffffff; border-radius: 8px; box-shadow: 0 12px 40px rgba(0,0,0,0.4); display: flex; flex-direction: column; overflow: hidden; animation: popIn 0.2s ease-out; }
         
         #window-utilities .window-container { width: 85vw; height: 85vh; }
-        #window-gan-hoso .window-container { width: 420px; height: auto; }
+        #window-gan-hoso .window-container { width: 440px; height: auto; }
 
         @keyframes popIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         .window-titlebar { background: #e0e0e0; padding: 8px 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #cccccc; }
@@ -81,7 +83,7 @@
         .form-native label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 5px; color: #333; }
         .form-native input, .form-native select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; box-sizing: border-box; font-family: inherit;}
         .form-native .input-group { display: flex; gap: 8px; }
-        .form-native .btn-picker { background: #F57C00; color: white; border: none; padding: 0 12px; border-radius: 4px; cursor: pointer; font-weight: 600; white-space: nowrap; font-size: 13px;}
+        .form-native .btn-picker { display: flex; align-items: center; gap: 4px; background: #F57C00; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: 600; white-space: nowrap; font-size: 12px; transition: background 0.2s;}
         .form-native .btn-picker:hover { background: #EF6C00; }
         .form-native .btn-submit { background-color: #1976D2; color: #ffffff; border: none; padding: 10px; font-size: 14px; font-weight: 600; border-radius: 4px; cursor: pointer; width: 100%; margin-top: 10px; }
         .form-native .btn-submit:hover { background-color: #1565C0; }
@@ -146,15 +148,27 @@
             <div class="form-native">
                 <div class="form-group">
                     <label>Họ và tên (Cột A):</label>
-                    <input type="text" id="hs-hoten" placeholder="Nhập họ và tên...">
+                    <input type="text" id="hs-hoten" placeholder="Nhập họ và tên cán bộ/giáo viên...">
                 </div>
+                
                 <div class="form-group">
                     <label>Tệp hồ sơ trên Drive (Cột B):</label>
+                    <input type="text" id="hs-link" placeholder="Dán link thủ công hoặc chọn từ hệ thống..." style="margin-bottom: 8px;">
+                    
                     <div class="input-group">
-                        <input type="text" id="hs-link" placeholder="Link tệp sẽ hiển thị ở đây..." readonly>
-                        <button class="btn-picker" onclick="khoiTaoGooglePicker()">Chọn tệp</button>
+                        <button class="btn-picker" onclick="khoiTaoGooglePicker()" title="Dùng tài khoản đang đăng nhập">
+                            <span class="material-icons" style="font-size: 16px;">folder_shared</span> TK Mặc định
+                        </button>
+                        <button class="btn-picker" style="background: #546E7A;" onclick="moDriveTaiKhoanKhac()" title="Chọn từ tài khoản Google khác">
+                            <span class="material-icons" style="font-size: 16px;">switch_account</span> TK Khác
+                        </button>
+                    </div>
+                    
+                    <div id="huong-dan-tk" style="display:none; font-size: 12px; color: #c62828; margin-top: 8px; background: #ffebee; padding: 8px; border-radius: 4px; line-height: 1.4;">
+                        <b>Hướng dẫn:</b> Hệ thống vừa mở trang Chọn Tài Khoản. Thầy hãy vào đúng tài khoản, copy đường link của thư mục hồ sơ và dán vào ô trống phía trên.
                     </div>
                 </div>
+
                 <div class="form-group">
                     <label>Giới tính (Cột C):</label>
                     <select id="hs-gioitinh">
@@ -163,6 +177,7 @@
                         <option value="xx">Nữ (xx)</option>
                     </select>
                 </div>
+                
                 <button class="btn-submit" onclick="xuLyLuuHoSo()">Lưu Dữ Liệu Hồ Sơ</button>
                 <div id="form-status" class="status-text">Đang xử lý, vui lòng chờ...</div>
             </div>
@@ -199,16 +214,24 @@
             document.getElementById('hs-hoten').value = '';
             document.getElementById('hs-link').value = '';
             document.getElementById('hs-gioitinh').value = '';
+            document.getElementById('huong-dan-tk').style.display = 'none'; // Ẩn hướng dẫn
         }
     }
 
-    // THUẬT TOÁN GỌI GOOGLE PICKER ĐƯỢC ĐIỀU CHỈNH THEO YÊU CẦU MỚI
+    // MỞ GIAO DIỆN CHỌN TÀI KHOẢN KHÁC (Tính năng bổ sung)
+    function moDriveTaiKhoanKhac() {
+        // Gọi URL định tuyến Account Chooser của Google, sau đó trả về Drive
+        window.open('https://accounts.google.com/AccountChooser?continue=https://drive.google.com/drive/', '_blank');
+        // Hiển thị khung hướng dẫn copy/paste
+        document.getElementById('huong-dan-tk').style.display = 'block';
+    }
+
     function khoiTaoGooglePicker() {
         const statusText = document.getElementById('form-status');
         statusText.innerText = "Đang kết nối không gian Drive...";
         statusText.style.display = 'block';
 
-        // 1. Ẩn UI Gán Hồ Sơ để giải phóng không gian màn hình cho Picker
+        // Ẩn Form để có không gian Picker
         document.getElementById('window-gan-hoso').style.display = 'none';
 
         fetch(KETNOI.WEB_APP_URL, {
@@ -221,18 +244,16 @@
             statusText.style.display = 'none';
             if (result.status === 'success' && result.token) {
                 gapi.load('picker', function() {
-                    // Cấu hình Ưu tiên chọn Thư mục (Tệp hồ sơ) thay vì file lẻ
                     var folderView = new google.picker.DocsView(google.picker.ViewId.FOLDERS)
                         .setIncludeFolders(true)
                         .setSelectFolderEnabled(true);
 
                     var picker = new google.picker.PickerBuilder()
-                        .enableFeature(google.picker.Feature.SUPPORT_DRIVES) // Hỗ trợ xem các Bộ nhớ dùng chung
-                        .addView(folderView) // Tab hiển thị thư mục
-                        .addView(google.picker.ViewId.DOCS) // Dự phòng tab hiển thị file lẻ
+                        .enableFeature(google.picker.Feature.SUPPORT_DRIVES) 
+                        .addView(folderView) 
+                        .addView(google.picker.ViewId.DOCS) 
                         .setOAuthToken(result.token)
                         .setCallback(function(data) {
-                            // 2. Khôi phục UI dù người dùng chọn thành công hay Hủy bỏ
                             if (data.action == google.picker.Action.PICKED) {
                                 document.getElementById('hs-link').value = data.docs[0].url;
                                 document.getElementById('window-gan-hoso').style.display = 'flex';
@@ -245,12 +266,12 @@
                 });
             } else {
                 alert("Lỗi kết nối Drive. Vui lòng thử lại.");
-                document.getElementById('window-gan-hoso').style.display = 'flex'; // Khôi phục UI nếu lỗi mạng
+                document.getElementById('window-gan-hoso').style.display = 'flex'; 
             }
         })
         .catch(err => {
             alert("Lỗi mạng: " + err);
-            document.getElementById('window-gan-hoso').style.display = 'flex'; // Khôi phục UI nếu lỗi
+            document.getElementById('window-gan-hoso').style.display = 'flex'; 
         });
     }
 
