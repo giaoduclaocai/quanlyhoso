@@ -303,7 +303,8 @@
                     <div class="form-group">
                         <label>Cấp quyền mở Hồ sơ/Icon (Đánh dấu x):</label>
                         <div class="checkbox-group" id="icon-permission-list" style="max-height: 200px; overflow-y: auto;">
-                            </div>
+                            <!-- Danh sách Icon sẽ được nạp tự động bằng mã JS -->
+                        </div>
                     </div>
                     <button class="form-native btn-submit" style="background-color: #8E24AA;" onclick="saveUser()">Lưu Cập Nhật</button>
                     <button class="form-native btn-submit" style="background-color: #757575;" onclick="clearUserForm()">Làm Mới Form</button>
@@ -584,7 +585,7 @@
     }
 
     /* =========================================================================
-       3. KHỐI TẠO HÌNH NỀN ICON TRỰC QUAN THEO LĨNH VỰC DỰ ÁN
+       3. KHỐI TẠO HÌNH NỀN ICON VÀ KIỂM DUYỆT BẢO MẬT
        ========================================================================= */
     function renderIconsFromData(data) {
         globalProfiles = data; 
@@ -660,10 +661,6 @@
             const div = document.createElement('div'); 
             div.className = 'desktop-icon'; 
             div.setAttribute('data-id', index + 1); 
-
-            // =========================================================================
-            // CẬP NHẬT: Thay thế văn bản hiển thị cố định bằng Tên đầy đủ của hệ thống
-            // =========================================================================
             div.setAttribute('data-desc', item.name); 
 
             div.innerHTML = `<div class="icon-box ${bgClass}">${iconContent}</div><span class="icon-text">${item.name}</span>`;
