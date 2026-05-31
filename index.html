@@ -5,7 +5,7 @@
     <link id="sys-favicon" rel="icon" href="">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title id="sys-title">Cổng Quản trị hồ sơ</title>
+    <title id="sys-title">Cổng thông tin Quản trị</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <script src="https://apis.google.com/js/api.js"></script> 
     <script src="https://accounts.google.com/gsi/client" async defer></script>
@@ -232,6 +232,10 @@
                             <option value="baohiem">Bảo hiểm & An sinh (Tấm khiên)</option>
                             <option value="thue">Thuế & Phí (Hóa đơn)</option>
                             <option value="nangluong">Năng lượng & Điện (Tia chớp)</option>
+                        </optgroup>
+                        <optgroup label="Giới tính & Cá nhân">
+                            <option value="nam">Giới tính Nam (Biểu tượng Nam)</option>
+                            <option value="nu">Giới tính Nữ (Biểu tượng Nữ)</option>
                         </optgroup>
                         <optgroup label="Khác">
                             <option value="danso">Dân số & Xã hội (Gia đình)</option>
@@ -608,6 +612,9 @@
                 case 'baohiem': iconContent = '<span class="material-icons">shield</span>'; bgClass = 'bg-10'; break;
                 case 'thue': iconContent = '<span class="material-icons">request_quote</span>'; bgClass = 'bg-8'; break;
                 case 'nangluong': iconContent = '<span class="material-icons">bolt</span>'; bgClass = 'bg-2'; break;
+                // Giới tính & Cá nhân
+                case 'nam': iconContent = '<span class="material-icons">male</span>'; bgClass = 'bg-1'; break;
+                case 'nu': iconContent = '<span class="material-icons">female</span>'; bgClass = 'bg-5'; break;
                 // Khác
                 case 'danso': iconContent = '<span class="material-icons">family_restroom</span>'; bgClass = 'bg-5'; break;
                 case 'tainguyen': iconContent = '<span class="material-icons">forest</span>'; bgClass = 'bg-3'; break;
