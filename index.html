@@ -9,7 +9,7 @@
     <title id="sys-title">Cổng thông tin Quản trị</title>
   
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <script src="https://apis.google.com/js/api.js"></script> 
+    <script src="https://accounts.google.com/gsi/client" async defer onload="khoiTaoGoogleLogin()"></script>
     
     <script>
         document.addEventListener("DOMContentLoaded", function() {
@@ -17,6 +17,9 @@
             document.getElementById('sys-favicon').href = KETNOI.LINK_LOGO;
             document.getElementById('sys-logo').src = KETNOI.LINK_LOGO;
             document.getElementById('sys-name').innerText = KETNOI.TEN_DINH_DANH;
+            
+            // Gán logo cho form đăng nhập
+            document.getElementById('login-logo').src = KETNOI.LINK_LOGO;
         });
 
         (function() {
@@ -32,6 +35,14 @@
         * { box-sizing: border-box; user-select: none; }
         html, body { height: 100vh; width: 100vw; margin: 0; padding: 0; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: #2c3e50; background-image: var(--default-bg); background-size: cover; background-position: center; background-attachment: fixed; background-repeat: no-repeat; display: flex; flex-direction: column; }
+
+        /* KHỐI GIAO DIỆN ĐĂNG NHẬP (BẢO MẬT HỆ THỐNG) */
+        .login-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(30, 40, 50, 0.85); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); z-index: 9999; display: flex; justify-content: center; align-items: center; }
+        .login-box { background: #ffffff; padding: 40px; border-radius: 12px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); text-align: center; width: 380px; display: flex; flex-direction: column; align-items: center; }
+        .login-box img { width: 90px; margin-bottom: 20px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1)); }
+        .login-box h2 { margin: 0 0 10px 0; color: #1976D2; font-size: 22px; font-weight: 700; }
+        .login-box p { margin: 0 0 30px 0; color: #555; font-size: 14px; line-height: 1.5; }
+        #btn-google-login { width: 100%; display: flex; justify-content: center; }
 
         #desktop-area { flex: 1; padding: 10px; display: flex; flex-direction: column; flex-wrap: wrap; align-content: flex-start; gap: 15px 5px; overflow: hidden; position: relative; }
         .desktop-icon { width: 90px; min-height: 105px; display: flex; flex-direction: column; align-items: center; padding: 6px; border: 1px solid transparent; border-radius: 4px; cursor: pointer; transition: background 0.1s; touch-action: none; }
@@ -69,7 +80,7 @@
         
         #window-utilities .window-container { width: 85vw; height: 85vh; }
         #window-gan-hoso .window-container { width: 440px; height: auto; }
-        #window-phanquyen .window-container { width: 80vw; height: 80vh; max-width: 1000px;} /* Cửa sổ Phân quyền */
+        #window-phanquyen .window-container { width: 80vw; height: 80vh; max-width: 1000px;} 
 
         @keyframes popIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         .window-titlebar { background: #e0e0e0; padding: 8px 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #cccccc; }
@@ -94,6 +105,15 @@
     </style>
 </head>
 <body>
+
+    <div id="login-overlay" class="login-overlay" style="display: none;">
+        <div class="login-box">
+            <img src="" id="login-logo" alt="Logo">
+            <h2>Xác thực Hệ thống</h2>
+            <p>Vui lòng đăng nhập bằng tài khoản Google công vụ để xác minh quyền truy cập hồ sơ lưu trữ.</p>
+            <div id="btn-google-login"></div>
+        </div>
+    </div>
 
     <div id="desktop-area"></div>
 
@@ -123,7 +143,7 @@
             <div class="tray-icon" onclick="changeBackgroundImage()" title="Cấu hình Hình nền Desktop">
                 <span class="material-icons">wallpaper</span>
             </div>
-            <div class="tray-icon" onclick="dangXuat()" title="Đăng xuất / Chuyển tài khoản xác thực">
+            <div class="tray-icon" onclick="dangXuat()" title="Đăng xuất khỏi hệ thống">
                 <span class="material-icons">logout</span>
             </div>
             <div class="clock-container" id="sys-clock">
@@ -209,74 +229,100 @@
     const desktopArea = document.getElementById('desktop-area');
 
     /* =========================================================================
-       0. KHỐI TƯƠNG TÁC API & XÁC THỰC BẢO MẬT
+       0. KHỐI XÁC THỰC GOOGLE VÀ NẠP DỮ LIỆU CHÍNH DANH
        ========================================================================= */
-    function loadDesktopData() {
-        // Kiểm tra định danh người dùng
-        let userEmail = localStorage.getItem('ht_user_email');
-        if (!userEmail) {
-            userEmail = prompt("HỆ THỐNG BẢO MẬT\n\nVui lòng nhập Email công vụ của Thầy/Cô để xác thực quyền truy cập:");
-            if (userEmail && userEmail.trim() !== "") {
-                localStorage.setItem('ht_user_email', userEmail.trim().toLowerCase());
-            } else {
-                alert("Thầy/Cô đang truy cập với quyền Khách (Chỉ xem dữ liệu).");
-                userEmail = "guest";
-            }
-        }
 
-        fetch(KETNOI.WEB_APP_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-            body: JSON.stringify({ action: 'initApp', email: userEmail }) 
-        })
-        .then(response => response.json())
-        .then(result => {
-            if (result.status === 'success') { 
-                renderIconsFromData(result.data); 
-                apDungPhanQuyen(result.roles || ""); // Gọi hàm kiểm tra hiển thị nút
-            } 
-        })
-        .catch(error => console.error("Lỗi:", error));
+    // Thuật toán giải mã JWT Token (Không cần thư viện ngoài)
+    function giaiMaJwt(token) {
+        var base64Url = token.split('.')[1];
+        var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        var jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+        return JSON.parse(jsonPayload);
     }
 
-    // THUẬT TOÁN ĐIỀU KHIỂN HIỂN THỊ NÚT BẤM DỰA TRÊN QUYỀN
-    function apDungPhanQuyen(roles) {
-        const btnCreate = document.getElementById('btn-create-profile');
-        const btnAssign = document.getElementById('btn-assign-profile');
-        const btnAuth   = document.getElementById('btn-auth-profile');
-
-        btnCreate.style.display = 'none';
-        btnAssign.style.display = 'none';
-        btnAuth.style.display = 'none';
-
-        // Quy ước: 'xx' là quyền Admin cao nhất, có thể thấy toàn bộ các nút
-        if (roles.includes('xx')) {
-            btnCreate.style.display = 'flex';
-            btnAssign.style.display = 'flex';
-            btnAuth.style.display = 'flex';
-        } else {
-            // Phân quyền chi tiết
-            if (roles.includes('taohoso')) btnCreate.style.display = 'flex';
-            if (roles.includes('ganhoso')) btnAssign.style.display = 'flex';
+    // Hàm gọi khi Thư viện GSI tải xong
+    function khoiTaoGoogleLogin() {
+        let userEmail = localStorage.getItem('ht_user_email');
+        if (!userEmail) {
+            document.getElementById('login-overlay').style.display = 'flex';
+            google.accounts.id.initialize({
+                client_id: KETNOI.CLIENT_ID,
+                callback: xuLyDangNhapThanhCong
+            });
+            google.accounts.id.renderButton(
+                document.getElementById("btn-google-login"),
+                { theme: "outline", size: "large", width: 300, shape: "rectangular" }
+            );
         }
+    }
+
+    // Hàm gọi khi Google trả về kết quả đăng nhập thành công
+    function xuLyDangNhapThanhCong(response) {
+        const payload = giaiMaJwt(response.credential);
+        const email = payload.email.toLowerCase();
+        
+        localStorage.setItem('ht_user_email', email);
+        document.getElementById('login-overlay').style.display = 'none';
+        
+        loadDesktopData(email);
     }
 
     function dangXuat() {
-        if(confirm("Thầy/Cô có chắc chắn muốn đăng xuất tài khoản hiện tại khỏi trình duyệt này?")) {
+        if(confirm("Thầy/Cô có chắc chắn muốn đăng xuất tài khoản an toàn khỏi hệ thống?")) {
             localStorage.removeItem('ht_user_email');
             location.reload();
         }
     }
 
-    window.addEventListener("DOMContentLoaded", function() { loadDesktopData(); });
+    window.addEventListener("DOMContentLoaded", function() { 
+        let userEmail = localStorage.getItem('ht_user_email');
+        if (userEmail) { loadDesktopData(userEmail); }
+    });
 
-    // Lắng nghe tín hiệu làm mới từ PhanQuyen.html
+    // Tải dữ liệu kèm quét email xác thực
+    function loadDesktopData(emailParam) {
+        fetch(KETNOI.WEB_APP_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({ action: 'initApp', email: emailParam }) 
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.status === 'success') { 
+                renderIconsFromData(result.data); 
+                apDungPhanQuyen(result.roles || ""); 
+            } 
+        })
+        .catch(error => console.error("Lỗi kết nối:", error));
+    }
+
+    function apDungPhanQuyen(roles) {
+        const btnCreate = document.getElementById('btn-create-profile');
+        const btnAssign = document.getElementById('btn-assign-profile');
+        const btnAuth   = document.getElementById('btn-auth-profile');
+
+        btnCreate.style.display = 'none'; btnAssign.style.display = 'none'; btnAuth.style.display = 'none';
+
+        if (roles.includes('xx')) {
+            btnCreate.style.display = 'flex'; btnAssign.style.display = 'flex'; btnAuth.style.display = 'flex';
+        } else {
+            if (roles.includes('taohoso')) btnCreate.style.display = 'flex';
+            if (roles.includes('ganhoso')) btnAssign.style.display = 'flex';
+        }
+    }
+
     window.addEventListener('message', function(event) {
         if (event.data === 'reload_desktop') {
             toggleHoSoModal(false);
-            loadDesktopData(); 
+            loadDesktopData(localStorage.getItem('ht_user_email')); 
         }
     });
+
+    /* =========================================================================
+       1. KHỐI QUẢN LÝ GIAO DIỆN (UI) VÀ PICKER
+       ========================================================================= */
 
     function toggleHoSoModal(isShow) {
         document.getElementById('window-gan-hoso').style.display = isShow ? 'flex' : 'none';
@@ -291,9 +337,7 @@
         var win = document.getElementById('window-phanquyen');
         var iframe = document.getElementById('iframe-phanquyen');
         if (isShow) {
-            if (iframe.getAttribute('src') === "" || iframe.getAttribute('src') === null) { 
-                iframe.src = "PhanQuyen.html"; 
-            }
+            if (iframe.getAttribute('src') === "" || iframe.getAttribute('src') === null) { iframe.src = "PhanQuyen.html"; }
             win.style.display = 'flex';
         } else { win.style.display = 'none'; }
     }
@@ -345,9 +389,13 @@
             body: JSON.stringify({ action: 'saveProfile', hoTen: hoTen, link: link, gioiTinh: gioiTinh })
         }).then(response => response.json()).then(result => {
             statusText.style.display = 'none';
-            if (result.status === 'success') { alert("Gán hồ sơ thành công!"); toggleHoSoModal(false); loadDesktopData(); } else { alert("Lỗi ghi dữ liệu: " + result.message); }
+            if (result.status === 'success') { alert("Gán hồ sơ thành công!"); toggleHoSoModal(false); loadDesktopData(localStorage.getItem('ht_user_email')); } else { alert("Lỗi ghi dữ liệu: " + result.message); }
         });
     }
+
+    /* =========================================================================
+       2. KHỐI RENDER VÀ ĐỒNG HỒ
+       ========================================================================= */
 
     function renderIconsFromData(data) {
         desktopArea.innerHTML = ''; 
