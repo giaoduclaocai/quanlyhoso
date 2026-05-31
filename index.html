@@ -11,11 +11,7 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     
     <script>
-        /* =========================================================================
-           THIẾT LẬP ĐỊNH DANH VÀ HÌNH NỀN TỨC THÌ (PRE-RENDER)
-           ========================================================================= */
         document.addEventListener("DOMContentLoaded", function() {
-            // Tự động gán dữ liệu từ tệp ketnoi.js vào giao diện
             document.getElementById('sys-title').innerText = KETNOI.TIEU_DE_TRANG;
             document.getElementById('sys-favicon').href = KETNOI.LINK_LOGO;
             document.getElementById('sys-logo').src = KETNOI.LINK_LOGO;
@@ -31,92 +27,57 @@
     </script>
 
     <style>
-        /* =========================================================================
-           1. KHỐI NỀN TẢNG (HỆ ĐIỀU HÀNH WINDOWS UI) 
-           ========================================================================= */
         :root {
             --default-bg: url('https://i.ibb.co/hJy3vH7y/hinh-nen-win-11-50-1.jpg');
         }
 
-        * {
-            box-sizing: border-box;
-            user-select: none; 
-        }
+        * { box-sizing: border-box; user-select: none; }
 
         html, body { 
-            height: 100vh;
-            width: 100vw;
-            margin: 0; 
-            padding: 0;
-            overflow: hidden; 
+            height: 100vh; width: 100vw; margin: 0; padding: 0; overflow: hidden; 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         body {
             background-color: #2c3e50; 
             background-image: var(--default-bg);
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            background-repeat: no-repeat;
-            display: flex;
-            flex-direction: column;
+            background-size: cover; background-position: center; background-attachment: fixed; background-repeat: no-repeat;
+            display: flex; flex-direction: column;
         }
 
-        /* =========================================================================
-           2. KHỐI MÀN HÌNH CHÍNH (DESKTOP GRID)
-           ========================================================================= */
+        /* KHỐI NÚT TẠO / GÁN HỒ SƠ TRÊN MÀN HÌNH */
+        .desktop-actions {
+            position: absolute; top: 15px; right: 15px; z-index: 100;
+            display: flex; gap: 10px;
+        }
+        .btn-top-action {
+            display: flex; align-items: center; gap: 6px; padding: 8px 15px;
+            font-size: 13px; font-weight: 600; color: #fff; border: none; border-radius: 6px; cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3); transition: transform 0.1s, background 0.2s;
+        }
+        .btn-top-action:active { transform: scale(0.95); }
+        .btn-create { background: rgba(25, 118, 210, 0.85); backdrop-filter: blur(5px); }
+        .btn-create:hover { background: rgba(25, 118, 210, 1); }
+        .btn-assign { background: rgba(56, 142, 60, 0.85); backdrop-filter: blur(5px); }
+        .btn-assign:hover { background: rgba(56, 142, 60, 1); }
+        .btn-top-action .material-icons { font-size: 18px; }
+
         #desktop-area {
-            flex: 1;
-            padding: 10px;
-            display: flex;
-            flex-direction: column;
-            flex-wrap: wrap;
-            align-content: flex-start;
-            gap: 15px 5px;
-            overflow: hidden;
-            position: relative;
+            flex: 1; padding: 10px; display: flex; flex-direction: column; flex-wrap: wrap; align-content: flex-start; gap: 15px 5px; overflow: hidden; position: relative;
         }
 
         .desktop-icon {
-            width: 90px;
-            min-height: 105px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 6px;
-            border: 1px solid transparent;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background 0.1s;
-            touch-action: none; 
+            width: 90px; min-height: 105px; display: flex; flex-direction: column; align-items: center; padding: 6px; border: 1px solid transparent; border-radius: 4px; cursor: pointer; transition: background 0.1s; touch-action: none; 
         }
 
-        .desktop-icon:hover {
-            background-color: rgba(255, 255, 255, 0.15);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-        }
-
-        .desktop-icon:active {
-            background-color: rgba(255, 255, 255, 0.25);
-        }
+        .desktop-icon:hover { background-color: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.3); }
+        .desktop-icon:active { background-color: rgba(255, 255, 255, 0.25); }
 
         .icon-box {
-            width: 50px;
-            height: 50px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 6px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            pointer-events: none; 
+            width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); pointer-events: none; 
         }
 
-        .icon-box .material-icons {
-            font-size: 28px;
-            color: #ffffff;
-        }
+        .icon-box .material-icons { font-size: 28px; color: #ffffff; }
 
         .bg-1 { background: linear-gradient(135deg, #1976D2, #42A5F5); }
         .bg-2 { background: linear-gradient(135deg, #F57F17, #FBC02D); }
@@ -130,132 +91,39 @@
         .bg-10 { background: linear-gradient(135deg, #0097A7, #26C6DA); }
 
         .icon-text {
-            color: #ffffff;
-            font-size: 12px;
-            text-align: center;
-            line-height: 1.3;
-            text-shadow: 1px 1px 2px #000000, 0 0 10px rgba(0,0,0,0.8);
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            word-wrap: break-word;
-            pointer-events: none;
+            color: #ffffff; font-size: 12px; text-align: center; line-height: 1.3; text-shadow: 1px 1px 2px #000000, 0 0 10px rgba(0,0,0,0.8); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; word-wrap: break-word; pointer-events: none;
         }
 
-        /* =========================================================================
-           3. THANH TÁC VỤ (TASKBAR) DƯỚI CÙNG
-           ========================================================================= */
         .taskbar {
-            height: 48px;
-            background: rgba(20, 20, 20, 0.75);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 15px;
-            z-index: 1000;
+            height: 48px; background: rgba(20, 20, 20, 0.75); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border-top: 1px solid rgba(255, 255, 255, 0.1); display: flex; justify-content: space-between; align-items: center; padding: 0 15px; z-index: 1000;
         }
 
-        .start-btn {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 6px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
+        .start-btn { display: flex; align-items: center; gap: 10px; padding: 6px 12px; border-radius: 6px; cursor: pointer; transition: background 0.2s; }
         .start-btn:hover { background: rgba(255, 255, 255, 0.15); }
-        
-        .start-logo {
-            height: 28px;
-            filter: drop-shadow(0 0 2px rgba(255,255,255,0.5));
-        }
+        .start-logo { height: 28px; filter: drop-shadow(0 0 2px rgba(255,255,255,0.5)); }
+        .start-text { color: #ffffff; font-weight: 600; font-size: 14px; letter-spacing: 0.5px; }
 
-        .start-text {
-            color: #ffffff;
-            font-weight: 600;
-            font-size: 14px;
-            letter-spacing: 0.5px;
-        }
-
-        .system-tray {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: #ffffff;
-        }
-
-        .tray-icon {
-            width: 36px;
-            height: 36px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
+        .system-tray { display: flex; align-items: center; gap: 8px; color: #ffffff; }
+        .tray-icon { width: 36px; height: 36px; display: flex; justify-content: center; align-items: center; border-radius: 4px; cursor: pointer; transition: background 0.2s; }
         .tray-icon:hover { background: rgba(255, 255, 255, 0.15); }
         .tray-icon .material-icons { font-size: 20px; }
+        .clock-container { text-align: right; font-size: 12px; line-height: 1.2; margin-left: 10px; padding: 0 5px; }
 
-        .clock-container {
-            text-align: right;
-            font-size: 12px;
-            line-height: 1.2;
-            margin-left: 10px;
-            padding: 0 5px;
-        }
-
-        /* =========================================================================
-           4. HỘP THOẠI GHI CHÚ BÁM CHUỘT (TOOLTIP) 
-           ========================================================================= */
         .win-tooltip {
-            position: fixed;
-            background: rgba(255, 255, 255, 0.95);
-            border: 1px solid #bbbbbb;
-            padding: 6px 12px;
-            border-radius: 4px;
-            font-size: 13px;
-            color: #333333;
-            box-shadow: 2px 2px 8px rgba(0,0,0,0.25);
-            pointer-events: none;
-            opacity: 0;
-            z-index: 9999;
-            max-width: 250px;
-            line-height: 1.4;
-            transition: opacity 0.15s ease-in-out;
+            position: fixed; background: rgba(255, 255, 255, 0.95); border: 1px solid #bbbbbb; padding: 6px 12px; border-radius: 4px; font-size: 13px; color: #333333; box-shadow: 2px 2px 8px rgba(0,0,0,0.25); pointer-events: none; opacity: 0; z-index: 9999; max-width: 250px; line-height: 1.4; transition: opacity 0.15s ease-in-out;
         }
 
-        /* =========================================================================
-           5. CỬA SỔ TIỆN ÍCH DẠY HỌC (WINDOW UI)
-           ========================================================================= */
         .window-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(0,0,0,0.3);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.4); display: none; justify-content: center; align-items: center; z-index: 2000;
         }
 
         .window-container {
-            width: 85vw;
-            height: 85vh;
-            background: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0 12px 40px rgba(0,0,0,0.4);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            animation: popIn 0.2s ease-out;
+            background: #ffffff; border-radius: 8px; box-shadow: 0 12px 40px rgba(0,0,0,0.4); display: flex; flex-direction: column; overflow: hidden; animation: popIn 0.2s ease-out;
         }
+
+        /* Cấu hình kích thước riêng cho từng loại cửa sổ */
+        #window-utilities .window-container { width: 85vw; height: 85vh; }
+        #window-gan-hoso .window-container { width: 450px; height: 420px; }
 
         @keyframes popIn {
             from { transform: scale(0.95); opacity: 0; }
@@ -263,41 +131,30 @@
         }
 
         .window-titlebar {
-            background: #e0e0e0;
-            padding: 8px 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #cccccc;
+            background: #e0e0e0; padding: 8px 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #cccccc;
         }
 
         .window-title { font-size: 14px; font-weight: 600; color: #333; display: flex; align-items: center; gap: 5px; }
         .window-title .material-icons { font-size: 16px; color: #555; }
-
         .window-close {
-            background: transparent;
-            border: none;
-            color: #333;
-            font-weight: bold;
-            font-size: 16px;
-            cursor: pointer;
-            width: 30px; height: 30px;
-            border-radius: 4px;
-            display: flex; align-items: center; justify-content: center;
+            background: transparent; border: none; color: #333; font-weight: bold; font-size: 16px; cursor: pointer; width: 30px; height: 30px; border-radius: 4px; display: flex; align-items: center; justify-content: center;
         }
         .window-close:hover { background: #e81123; color: white; }
-
-        .window-content {
-            flex: 1;
-            width: 100%;
-            border: none;
-        }
+        .window-content { flex: 1; width: 100%; border: none; }
     </style>
 </head>
 <body>
 
-    <div id="desktop-area">
+    <div class="desktop-actions">
+        <button class="btn-top-action btn-create" onclick="window.open('https://drive.google.com/drive/my-drive', '_blank')">
+            <span class="material-icons">add_to_drive</span> Tạo hồ sơ
+        </button>
+        <button class="btn-top-action btn-assign" onclick="toggleHoSoModal(true)">
+            <span class="material-icons">attachment</span> Gán hồ sơ
+        </button>
     </div>
+
+    <div id="desktop-area"></div>
 
     <div class="taskbar">
         <div class="start-btn" title="Hệ thống Quản trị Điều hành">
@@ -335,23 +192,29 @@
         </div>
     </div>
 
+    <div id="window-gan-hoso" class="window-overlay">
+        <div class="window-container">
+            <div class="window-titlebar">
+                <div class="window-title">
+                    <span class="material-icons">attachment</span> Công cụ Gán Hồ sơ
+                </div>
+                <button class="window-close" onclick="toggleHoSoModal(false)" title="Đóng cửa sổ">✕</button>
+            </div>
+            <iframe id="iframe-hoso" src="" class="window-content" title="Gán Hồ sơ"></iframe>
+        </div>
+    </div>
+
 <script>
-    /* =========================================================================
-       0. KHỐI NẠP DỮ LIỆU ĐỘNG TỪ GOOGLE SHEET (API FETCH)
-       ========================================================================= */
-    // Biến toàn cục để quản lý Icon
     let icons = [];
     let isDragging = false;
     const tooltip = document.getElementById('win-tooltip');
     const desktopArea = document.getElementById('desktop-area');
 
-    window.addEventListener("DOMContentLoaded", function() {
-        // Lấy URL Web App trực tiếp từ tệp cấu hình ketnoi.js
+    // Chuyển hàm fetch thành một khối độc lập để dễ dàng tái sử dụng (Refresh)
+    function fetchIconsData() {
         fetch(KETNOI.WEB_APP_URL, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'text/plain;charset=utf-8',
-            }
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' }
         })
         .then(response => response.json())
         .then(result => {
@@ -364,7 +227,34 @@
         .catch(error => {
             console.error("Không thể kết nối đến hệ thống máy chủ:", error);
         });
+    }
+
+    window.addEventListener("DOMContentLoaded", function() {
+        fetchIconsData();
     });
+
+    // Lắng nghe tín hiệu trả về từ Iframe taohoso.html để cập nhật Desktop tự động
+    window.addEventListener('message', function(event) {
+        if (event.data === 'reload_desktop') {
+            toggleHoSoModal(false); // Đóng cửa sổ Gán hồ sơ
+            fetchIconsData();       // Tải lại các Icon mới nhất
+        }
+    });
+
+    // Hàm điều khiển Cửa sổ Gán Hồ sơ
+    function toggleHoSoModal(isShow) {
+        var win = document.getElementById('window-gan-hoso');
+        var iframe = document.getElementById('iframe-hoso');
+        if (isShow) {
+            // Chỉ chèn link tải nếu chưa có, tránh tải lại dư thừa
+            if (!iframe.src) {
+                iframe.src = KETNOI.WEB_APP_URL + "?page=taohoso";
+            }
+            win.style.display = 'flex';
+        } else {
+            win.style.display = 'none';
+        }
+    }
 
     function renderIconsFromData(data) {
         desktopArea.innerHTML = ''; 
@@ -372,15 +262,14 @@
         data.forEach((item, index) => {
             let gender = item.gender;
             let iconContent = '<span class="material-icons">folder</span>';
-            let bgClass = 'bg-' + ((index % 10) + 1); // Màu ngẫu nhiên mặc định
+            let bgClass = 'bg-' + ((index % 10) + 1);
 
-            // Thuật toán nhận diện giới tính từ dữ liệu Cột C
             if (gender === 'nam' || gender === 'x') {
                 iconContent = '<span style="font-size: 32px;">👨‍🏫</span>';
-                bgClass = 'bg-1'; // Tone màu xanh dương
+                bgClass = 'bg-1'; 
             } else if (gender === 'nữ' || gender === 'nu' || gender === 'xx') {
                 iconContent = '<span style="font-size: 32px;">👩‍🏫</span>';
-                bgClass = 'bg-5'; // Tone màu tím/hồng
+                bgClass = 'bg-5'; 
             }
             
             const div = document.createElement('div');
@@ -403,9 +292,6 @@
         setupDragEvents();
     }
 
-    /* =========================================================================
-       1. KHỐI XỬ LÝ ĐIỀU HƯỚNG VÀ TOOLTIP
-       ========================================================================= */
     function navigateTo(url, isNewTab) {
         if (isDragging) {
             isDragging = false;
@@ -432,9 +318,6 @@
         });
     }
 
-    /* =========================================================================
-       2. KHỐI ĐỒNG HỒ THỜI GIAN THỰC
-       ========================================================================= */
     function updateClock() {
         const now = new Date();
         const timeStr = now.toLocaleTimeString('vi-VN', {hour: '2-digit', minute:'2-digit'});
@@ -444,9 +327,6 @@
     setInterval(updateClock, 1000);
     updateClock();
 
-    /* =========================================================================
-       3. THUẬT TOÁN ĐÓNG BĂNG TỌA ĐỘ VÀ KÉO THẢ
-       ========================================================================= */
     function initializeLayout() {
         const savedPositions = JSON.parse(localStorage.getItem('ht_desktop_positions_v3')) || {};
         
@@ -576,9 +456,6 @@
         localStorage.setItem('ht_desktop_positions_v3', JSON.stringify(positions));
     }
 
-    /* =========================================================================
-       4. KHỐI KHÔI PHỤC VỊ TRÍ GỐC (RESET POSITIONS)
-       ========================================================================= */
     function resetPositions() {
         localStorage.removeItem('ht_desktop_positions_v3');
         
@@ -592,9 +469,6 @@
         initializeLayout();
     }
 
-    /* =========================================================================
-       5. KHỐI CẤU HÌNH HÌNH NỀN VÀ QUẢN LÝ CỬA SỔ
-       ========================================================================= */
     function changeBackgroundImage() {
         var currentUrl = localStorage.getItem("ht_dashboard_bg") || "";
         var newUrl = prompt(
