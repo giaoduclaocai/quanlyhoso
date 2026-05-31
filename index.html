@@ -297,7 +297,7 @@
 <body>
 
     <div id="desktop-area">
-        </div>
+    </div>
 
     <div class="taskbar">
         <div class="start-btn" title="Hệ thống Quản trị Điều hành">
@@ -370,7 +370,18 @@
         desktopArea.innerHTML = ''; 
         
         data.forEach((item, index) => {
-            const bgClass = 'bg-' + ((index % 10) + 1);
+            let gender = item.gender;
+            let iconContent = '<span class="material-icons">folder</span>';
+            let bgClass = 'bg-' + ((index % 10) + 1); // Màu ngẫu nhiên mặc định
+
+            // Thuật toán nhận diện giới tính từ dữ liệu Cột C
+            if (gender === 'nam' || gender === 'x') {
+                iconContent = '<span style="font-size: 32px;">👨‍🏫</span>';
+                bgClass = 'bg-1'; // Tone màu xanh dương
+            } else if (gender === 'nữ' || gender === 'nu' || gender === 'xx') {
+                iconContent = '<span style="font-size: 32px;">👩‍🏫</span>';
+                bgClass = 'bg-5'; // Tone màu tím/hồng
+            }
             
             const div = document.createElement('div');
             div.className = 'desktop-icon';
@@ -378,7 +389,7 @@
             div.setAttribute('data-desc', 'Nhấn để mở liên kết thư mục');
             
             div.innerHTML = `
-                <div class="icon-box ${bgClass}"><span class="material-icons">folder</span></div>
+                <div class="icon-box ${bgClass}">${iconContent}</div>
                 <span class="icon-text">${item.name}</span>
             `;
             
