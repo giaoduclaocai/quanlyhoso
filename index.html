@@ -9,7 +9,8 @@
     <title id="sys-title">Cổng thông tin Quản trị</title>
   
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <script src="https://accounts.google.com/gsi/client" async defer onload="khoiTaoGoogleLogin()"></script>
+    <script src="https://apis.google.com/js/api.js"></script> 
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     
     <script>
         document.addEventListener("DOMContentLoaded", function() {
@@ -17,9 +18,6 @@
             document.getElementById('sys-favicon').href = KETNOI.LINK_LOGO;
             document.getElementById('sys-logo').src = KETNOI.LINK_LOGO;
             document.getElementById('sys-name').innerText = KETNOI.TEN_DINH_DANH;
-            
-            // Gán logo cho form đăng nhập
-            document.getElementById('login-logo').src = KETNOI.LINK_LOGO;
         });
 
         (function() {
@@ -36,14 +34,6 @@
         html, body { height: 100vh; width: 100vw; margin: 0; padding: 0; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: #2c3e50; background-image: var(--default-bg); background-size: cover; background-position: center; background-attachment: fixed; background-repeat: no-repeat; display: flex; flex-direction: column; }
 
-        /* KHỐI GIAO DIỆN ĐĂNG NHẬP (BẢO MẬT HỆ THỐNG) */
-        .login-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(30, 40, 50, 0.85); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); z-index: 9999; display: flex; justify-content: center; align-items: center; }
-        .login-box { background: #ffffff; padding: 40px; border-radius: 12px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); text-align: center; width: 380px; display: flex; flex-direction: column; align-items: center; }
-        .login-box img { width: 90px; margin-bottom: 20px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1)); }
-        .login-box h2 { margin: 0 0 10px 0; color: #1976D2; font-size: 22px; font-weight: 700; }
-        .login-box p { margin: 0 0 30px 0; color: #555; font-size: 14px; line-height: 1.5; }
-        #btn-google-login { width: 100%; display: flex; justify-content: center; }
-
         #desktop-area { flex: 1; padding: 10px; display: flex; flex-direction: column; flex-wrap: wrap; align-content: flex-start; gap: 15px 5px; overflow: hidden; position: relative; }
         .desktop-icon { width: 90px; min-height: 105px; display: flex; flex-direction: column; align-items: center; padding: 6px; border: 1px solid transparent; border-radius: 4px; cursor: pointer; transition: background 0.1s; touch-action: none; }
         .desktop-icon:hover { background-color: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.3); }
@@ -56,7 +46,9 @@
         .icon-text { color: #ffffff; font-size: 12px; text-align: center; line-height: 1.3; text-shadow: 1px 1px 2px #000000, 0 0 10px rgba(0,0,0,0.8); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; word-wrap: break-word; pointer-events: none; }
 
         .taskbar { height: 48px; background: rgba(20, 20, 20, 0.75); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border-top: 1px solid rgba(255, 255, 255, 0.1); display: flex; justify-content: space-between; align-items: center; padding: 0 15px; z-index: 1000; }
-        .start-btn { display: flex; align-items: center; gap: 10px; padding: 6px 12px; border-radius: 6px; cursor: pointer; transition: background 0.2s; }
+        
+        /* Cấu trúc nút Start/Login */
+        .start-btn { display: flex; align-items: center; gap: 10px; padding: 4px 12px; border-radius: 6px; transition: background 0.2s; }
         .start-btn:hover { background: rgba(255, 255, 255, 0.15); }
         .start-logo { height: 28px; filter: drop-shadow(0 0 2px rgba(255,255,255,0.5)); }
         .start-text { color: #ffffff; font-weight: 600; font-size: 14px; letter-spacing: 0.5px; }
@@ -90,7 +82,6 @@
         .window-close:hover { background: #e81123; color: white; }
         .window-content { flex: 1; width: 100%; border: none; }
 
-        /* Giao diện Form Gán Hồ Sơ (Native) */
         .form-native { padding: 20px; user-select: text; }
         .form-native .form-group { margin-bottom: 15px; }
         .form-native label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 5px; color: #333; }
@@ -106,20 +97,12 @@
 </head>
 <body>
 
-    <div id="login-overlay" class="login-overlay" style="display: none;">
-        <div class="login-box">
-            <img src="" id="login-logo" alt="Logo">
-            <h2>Xác thực Hệ thống</h2>
-            <p>Vui lòng đăng nhập bằng tài khoản Google công vụ để xác minh quyền truy cập hồ sơ lưu trữ.</p>
-            <div id="btn-google-login"></div>
-        </div>
-    </div>
-
     <div id="desktop-area"></div>
 
     <div class="taskbar">
         <div class="start-btn" title="Hệ thống Quản trị Điều hành">
             <img src="" id="sys-logo" alt="Logo" class="start-logo">
+            <div id="btn-google-login" style="display:none; margin-left: 5px;"></div>
             <span class="start-text" id="sys-name">Đang tải...</span>
         </div>
         
@@ -228,11 +211,14 @@
     const tooltip = document.getElementById('win-tooltip');
     const desktopArea = document.getElementById('desktop-area');
 
+    // Khởi tạo các luồng xác thực Client-side (Tuân thủ chính sách bảo mật Google)
+    let tokenClient;
+    let pickerAccessToken = null;
+
     /* =========================================================================
        0. KHỐI XÁC THỰC GOOGLE VÀ NẠP DỮ LIỆU CHÍNH DANH
        ========================================================================= */
 
-    // Thuật toán giải mã JWT Token (Không cần thư viện ngoài)
     function giaiMaJwt(token) {
         var base64Url = token.split('.')[1];
         var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
@@ -242,44 +228,64 @@
         return JSON.parse(jsonPayload);
     }
 
-    // Hàm gọi khi Thư viện GSI tải xong
-    function khoiTaoGoogleLogin() {
+    // Sự kiện khởi chạy phần mềm: Kiểm tra đăng nhập tức thì
+    window.onload = function() {
+        // 1. Nạp Identity Services (Dành cho việc đăng nhập)
+        google.accounts.id.initialize({
+            client_id: KETNOI.CLIENT_ID,
+            callback: xuLyDangNhapThanhCong
+        });
+
+        // 2. Nạp OAuth2 Services (Dành cho Picker truy cập Drive nội bộ an toàn)
+        tokenClient = google.accounts.oauth2.initTokenClient({
+            client_id: KETNOI.CLIENT_ID,
+            scope: 'https://www.googleapis.com/auth/drive.readonly',
+            callback: (tokenResponse) => {
+                pickerAccessToken = tokenResponse.access_token;
+                hienThiGooglePicker(pickerAccessToken);
+            }
+        });
+
+        kiemTraTrangThaiDangNhap();
+    };
+
+    function kiemTraTrangThaiDangNhap() {
         let userEmail = localStorage.getItem('ht_user_email');
         if (!userEmail) {
-            document.getElementById('login-overlay').style.display = 'flex';
-            google.accounts.id.initialize({
-                client_id: KETNOI.CLIENT_ID,
-                callback: xuLyDangNhapThanhCong
-            });
+            // Khóa Desktop, thay tên hệ thống bằng Nút Đăng Nhập
+            document.getElementById('sys-name').style.display = 'none';
+            document.querySelector('.system-tray').style.display = 'none';
+            document.getElementById('btn-google-login').style.display = 'block';
+            
             google.accounts.id.renderButton(
                 document.getElementById("btn-google-login"),
-                { theme: "outline", size: "large", width: 300, shape: "rectangular" }
+                { theme: "outline", size: "medium", type: "standard", text: "signin" }
             );
+        } else {
+            // Mở Desktop, hiện Email
+            document.getElementById('btn-google-login').style.display = 'none';
+            document.getElementById('sys-name').style.display = 'block';
+            document.getElementById('sys-name').innerText = userEmail;
+            document.querySelector('.system-tray').style.display = 'flex';
+            
+            loadDesktopData(userEmail);
         }
     }
 
-    // Hàm gọi khi Google trả về kết quả đăng nhập thành công
     function xuLyDangNhapThanhCong(response) {
         const payload = giaiMaJwt(response.credential);
         const email = payload.email.toLowerCase();
-        
         localStorage.setItem('ht_user_email', email);
-        document.getElementById('login-overlay').style.display = 'none';
-        
-        loadDesktopData(email);
+        kiemTraTrangThaiDangNhap();
     }
 
     function dangXuat() {
         if(confirm("Thầy/Cô có chắc chắn muốn đăng xuất tài khoản an toàn khỏi hệ thống?")) {
             localStorage.removeItem('ht_user_email');
+            pickerAccessToken = null; // Reset mã thông báo Drive
             location.reload();
         }
     }
-
-    window.addEventListener("DOMContentLoaded", function() { 
-        let userEmail = localStorage.getItem('ht_user_email');
-        if (userEmail) { loadDesktopData(userEmail); }
-    });
 
     // Tải dữ liệu kèm quét email xác thực
     function loadDesktopData(emailParam) {
@@ -321,7 +327,7 @@
     });
 
     /* =========================================================================
-       1. KHỐI QUẢN LÝ GIAO DIỆN (UI) VÀ PICKER
+       1. KHỐI QUẢN LÝ GIAO DIỆN (UI) VÀ PICKER (OAUTH 2.0)
        ========================================================================= */
 
     function toggleHoSoModal(isShow) {
@@ -349,27 +355,43 @@
 
     function khoiTaoGooglePicker() {
         const statusText = document.getElementById('form-status');
-        statusText.innerText = "Đang kết nối không gian Drive..."; statusText.style.display = 'block';
-        document.getElementById('window-gan-hoso').style.display = 'none';
+        statusText.innerText = "Đang kết nối không gian Drive an toàn..."; statusText.style.display = 'block';
+        
+        // Cấp phép bằng Token Client của chính người dùng hiện tại
+        if (pickerAccessToken === null) {
+            // Hiển thị hộp thoại Consent của Google lần đầu
+            tokenClient.requestAccessToken({prompt: 'consent'});
+        } else {
+            // Mở trực tiếp nếu đã có token trong phiên
+            hienThiGooglePicker(pickerAccessToken);
+        }
+    }
 
-        fetch(KETNOI.WEB_APP_URL, {
-            method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-            body: JSON.stringify({ action: 'getToken' })
-        }).then(response => response.json()).then(result => {
-            statusText.style.display = 'none';
-            if (result.status === 'success' && result.token) {
-                gapi.load('picker', function() {
-                    var folderView = new google.picker.DocsView(google.picker.ViewId.FOLDERS).setIncludeFolders(true).setSelectFolderEnabled(true);
-                    var picker = new google.picker.PickerBuilder()
-                        .enableFeature(google.picker.Feature.SUPPORT_DRIVES).addView(folderView).addView(google.picker.ViewId.DOCS).setOAuthToken(result.token)
-                        .setCallback(function(data) {
-                            if (data.action == google.picker.Action.PICKED) {
-                                var elLink = document.getElementById('hs-link'); elLink.value = data.docs[0].url; elLink.style.borderColor = '#ccc'; document.getElementById('window-gan-hoso').style.display = 'flex';
-                            } else if (data.action == google.picker.Action.CANCEL) { document.getElementById('window-gan-hoso').style.display = 'flex'; }
-                        }).build(); picker.setVisible(true);
-                });
-            } else { alert("Lỗi kết nối Drive. Vui lòng thử lại."); document.getElementById('window-gan-hoso').style.display = 'flex'; }
-        }).catch(err => { alert("Lỗi mạng: " + err); document.getElementById('window-gan-hoso').style.display = 'flex'; });
+    function hienThiGooglePicker(token) {
+        document.getElementById('form-status').style.display = 'none';
+        document.getElementById('window-gan-hoso').style.display = 'none'; // Ẩn UI để nhường chỗ
+        
+        gapi.load('picker', function() {
+            var folderView = new google.picker.DocsView(google.picker.ViewId.FOLDERS)
+                .setIncludeFolders(true).setSelectFolderEnabled(true);
+            
+            var picker = new google.picker.PickerBuilder()
+                .enableFeature(google.picker.Feature.SUPPORT_DRIVES)
+                .addView(folderView)
+                .addView(google.picker.ViewId.DOCS)
+                .setOAuthToken(token)
+                .setCallback(function(data) {
+                    if (data.action == google.picker.Action.PICKED) {
+                        var elLink = document.getElementById('hs-link'); 
+                        elLink.value = data.docs[0].url; 
+                        elLink.style.borderColor = '#ccc'; 
+                        document.getElementById('window-gan-hoso').style.display = 'flex';
+                    } else if (data.action == google.picker.Action.CANCEL) { 
+                        document.getElementById('window-gan-hoso').style.display = 'flex'; 
+                    }
+                }).build(); 
+            picker.setVisible(true);
+        });
     }
 
     function xuLyLuuHoSo() {
