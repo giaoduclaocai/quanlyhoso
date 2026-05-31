@@ -97,7 +97,7 @@
         /* Giao diện Phân quyền Native */
         .phanquyen-layout { display: flex; gap: 20px; padding: 20px; height: calc(100% - 46px); background: #f4f6f8; box-sizing: border-box; user-select: text; }
         .pq-panel { background: #ffffff; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); padding: 20px; display: flex; flex-direction: column; }
-        .pq-form { width: 350px; flex-shrink: 0; }
+        .pq-form { width: 350px; flex-shrink: 0; overflow-y: auto;}
         .pq-table-container { flex: 1; overflow-y: auto; }
         .pq-panel h3 { margin-top: 0; color: #333; font-size: 16px; border-bottom: 2px solid #8E24AA; padding-bottom: 8px; margin-bottom: 15px; }
         .checkbox-group { display: flex; flex-direction: column; gap: 8px; margin-top: 5px; background: #f9f9f9; padding: 10px; border-radius: 4px; border: 1px solid #eee; }
@@ -300,6 +300,11 @@
                             </label>
                         </div>
                     </div>
+                    <div class="form-group">
+                        <label>Cấp quyền mở Hồ sơ/Icon (Đánh dấu x):</label>
+                        <div class="checkbox-group" id="icon-permission-list" style="max-height: 200px; overflow-y: auto;">
+                            </div>
+                    </div>
                     <button class="form-native btn-submit" style="background-color: #8E24AA;" onclick="saveUser()">Lưu Cập Nhật</button>
                     <button class="form-native btn-submit" style="background-color: #757575;" onclick="clearUserForm()">Làm Mới Form</button>
                     <div id="pq-status" class="status-text" style="color:#8E24AA;">Đang xử lý...</div>
@@ -324,6 +329,8 @@
     let icons = []; let isDragging = false; const tooltip = document.getElementById('win-tooltip'); const desktopArea = document.getElementById('desktop-area');
     let tokenClient; let pickerAccessToken = null;
     let globalProfiles = []; // Lưu trữ tạm danh sách hồ sơ để dùng cho Cửa sổ Xóa
+    let sysRoles = "";       // BẢO MẬT: Lưu quyền hệ thống của phiên làm việc
+    let sysIconRoles = "";   // BẢO MẬT: Lưu quyền Icon của phiên làm việc
 
     /* =========================================================================
        0. KHỐI XÁC THỰC GOOGLE VÀ NẠP DỮ LIỆU CHÍNH DANH
@@ -359,7 +366,9 @@
         }).then(response => response.json()).then(result => {
             if (result.status === 'success') { 
                 document.getElementById('sys-name').innerText = result.verifiedEmail; 
-                renderIconsFromData(result.data); apDungPhanQuyen(result.roles || ""); 
+                sysRoles = result.roles || "";
+                sysIconRoles = result.iconRoles || "";
+                renderIconsFromData(result.data); apDungPhanQuyen(sysRoles); 
             } else { alert(result.message); dangXuat(); }
         }).catch(error => console.error("Lỗi:", error));
     }
@@ -477,7 +486,14 @@
        ========================================================================= */
     function togglePhanQuyenModal(isShow) {
         document.getElementById('window-phanquyen').style.display = isShow ? 'flex' : 'none';
-        if (isShow) { loadUsers(); } else { clearUserForm(); }
+        if (isShow) { 
+            const iconListContainer = document.getElementById('icon-permission-list');
+            iconListContainer.innerHTML = '';
+            globalProfiles.forEach(profile => {
+                iconListContainer.innerHTML += `<label class="checkbox-label"><input type="checkbox" class="icon-role-cb" value="${profile.name}"> ${profile.name}</label>`;
+            });
+            loadUsers(); 
+        } else { clearUserForm(); }
     }
 
     function loadUsers() {
@@ -500,24 +516,35 @@
             if (user.roles.includes('ganhoso')) displayRoles.push('Gán hồ sơ');
             if (user.roles.includes('xoahoso')) displayRoles.push('Xóa hồ sơ');
             if (user.roles.includes('xx')) displayRoles.push('<b style="color:#d32f2f">Quản trị viên</b>');
+            
+            const safeName = user.name.replace(/'/g, "\\'");
+            const safeRoles = user.roles.replace(/'/g, "\\'");
+            const safeIconRoles = (user.iconRoles || "").replace(/'/g, "\\'");
+
             tr.innerHTML = `<td>${user.name}</td><td>${user.email}</td><td>${displayRoles.join(' | ')}</td>
-                <td><span class="action-link" onclick="editUser('${user.name}', '${user.email}', '${user.roles}')">Sửa</span>
+                <td><span class="action-link" onclick="editUser('${safeName}', '${user.email}', '${safeRoles}', '${safeIconRoles}')">Sửa</span>
                     <span class="action-link delete" onclick="deleteUser('${user.email}')">Xóa</span></td>`;
             tbody.appendChild(tr);
         });
     }
 
-    function editUser(name, email, roles) {
+    function editUser(name, email, roles, iconRoles) {
         document.getElementById('pq-name').value = name; document.getElementById('pq-email').value = email;
         document.getElementById('role-taohoso').checked = roles.includes('taohoso');
         document.getElementById('role-ganhoso').checked = roles.includes('ganhoso');
         document.getElementById('role-xoahoso').checked = roles.includes('xoahoso');
         document.getElementById('role-xx').checked = roles.includes('xx');
+
+        const allowedIcons = (iconRoles || "").split('|');
+        document.querySelectorAll('.icon-role-cb').forEach(cb => {
+            cb.checked = allowedIcons.includes(cb.value);
+        });
     }
 
     function clearUserForm() {
         document.getElementById('pq-name').value = ''; document.getElementById('pq-email').value = '';
         document.getElementById('role-taohoso').checked = false; document.getElementById('role-ganhoso').checked = false; document.getElementById('role-xoahoso').checked = false; document.getElementById('role-xx').checked = false;
+        document.querySelectorAll('.icon-role-cb').forEach(cb => cb.checked = false);
     }
 
     function saveUser() {
@@ -528,10 +555,15 @@
         if (document.getElementById('role-ganhoso').checked) roles.push('ganhoso');
         if (document.getElementById('role-xoahoso').checked) roles.push('xoahoso');
         if (document.getElementById('role-xx').checked) roles.push('xx');
+
+        let selectedIcons = [];
+        document.querySelectorAll('.icon-role-cb:checked').forEach(cb => selectedIcons.push(cb.value));
+        let iconRolesStr = selectedIcons.join('|');
+
         document.getElementById('pq-status').style.display = 'block';
         fetch(KETNOI.WEB_APP_URL, {
             method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-            body: JSON.stringify({ action: 'saveUser', name: name, email: email, roles: roles.join(','), credential: localStorage.getItem('ht_jwt_token') })
+            body: JSON.stringify({ action: 'saveUser', name: name, email: email, roles: roles.join(','), iconRoles: iconRolesStr, credential: localStorage.getItem('ht_jwt_token') })
         }).then(response => response.json()).then(result => {
             document.getElementById('pq-status').style.display = 'none';
             if (result.status === 'success') { alert("Cập nhật quyền thành công!"); clearUserForm(); loadUsers(); loadDesktopData(localStorage.getItem('ht_jwt_token')); } else { alert("Lỗi: " + result.message); }
@@ -635,7 +667,21 @@
             div.setAttribute('data-desc', item.name); 
 
             div.innerHTML = `<div class="icon-box ${bgClass}">${iconContent}</div><span class="icon-text">${item.name}</span>`;
-            div.onclick = function() { navigateTo(item.url, true); }; 
+            
+            // THUẬT TOÁN BẢO VỆ VÀ KIỂM DUYỆT QUYỀN TRUY CẬP ICON
+            div.onclick = function() { 
+                if (sysRoles.includes('xx')) {
+                    navigateTo(item.url, true);
+                    return;
+                }
+                const allowedIcons = sysIconRoles.split('|');
+                if (allowedIcons.includes(item.name)) {
+                    navigateTo(item.url, true);
+                } else {
+                    alert("⛔ HỆ THỐNG TỪ CHỐI TRUY CẬP:\n\nThầy/Cô chưa được cấp quyền mở hồ sơ [" + item.name + "].\nVui lòng liên hệ Quản trị viên để được đánh dấu (x) cấp quyền!");
+                }
+            }; 
+
             desktopArea.appendChild(div);
         });
         
