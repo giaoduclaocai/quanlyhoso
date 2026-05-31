@@ -79,7 +79,7 @@
         .window-container { background: #ffffff; border-radius: 8px; box-shadow: 0 12px 40px rgba(0,0,0,0.4); display: flex; flex-direction: column; overflow: hidden; animation: popIn 0.2s ease-out; }
         
         #window-utilities .window-container { width: 85vw; height: 85vh; }
-        #window-gan-hoso .window-container { width: 420px; height: 380px; } /* Kích thước cho form gán hồ sơ */
+        #window-gan-hoso .window-container { width: 420px; height: 380px; }
 
         @keyframes popIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         .window-titlebar { background: #e0e0e0; padding: 8px 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #cccccc; }
@@ -159,7 +159,6 @@
     const tooltip = document.getElementById('win-tooltip');
     const desktopArea = document.getElementById('desktop-area');
 
-    // Hàm gọi dữ liệu độc lập để dễ dàng làm mới
     function loadDesktopData() {
         fetch(KETNOI.WEB_APP_URL, {
             method: 'POST',
@@ -177,20 +176,22 @@
         loadDesktopData();
     });
 
-    // Lắng nghe tín hiệu từ taohoso.html để cập nhật dữ liệu tự động
     window.addEventListener('message', function(event) {
         if (event.data === 'reload_desktop') {
-            toggleHoSoModal(false); // Đóng hộp thoại
-            loadDesktopData();      // Tải lại icon
+            toggleHoSoModal(false); 
+            loadDesktopData();      
         }
     });
 
-    // Điều khiển bật tắt Iframe Gán Hồ Sơ
+    // Hàm đã được sửa thuật toán tải iframe
     function toggleHoSoModal(isShow) {
         var win = document.getElementById('window-gan-hoso');
         var iframe = document.getElementById('iframe-hoso');
         if (isShow) {
-            if (!iframe.src) { iframe.src = KETNOI.WEB_APP_URL + "?page=taohoso"; }
+            // Khắc phục lỗi DOM: Bắt buộc dùng getAttribute để kiểm tra gốc thay vì .src
+            if (iframe.getAttribute('src') === "" || iframe.getAttribute('src') === null) { 
+                iframe.src = KETNOI.WEB_APP_URL + "?page=taohoso"; 
+            }
             win.style.display = 'flex';
         } else {
             win.style.display = 'none';
