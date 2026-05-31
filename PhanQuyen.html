@@ -8,32 +8,26 @@
         .panel { background: #ffffff; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); padding: 20px; flex: 1; display: flex; flex-direction: column; }
         .panel-form { max-width: 350px; }
         h3 { margin-top: 0; color: #333; font-size: 16px; border-bottom: 2px solid #8E24AA; padding-bottom: 8px; margin-bottom: 15px; }
-        
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 5px; color: #555; }
         .form-input { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; box-sizing: border-box; outline: none; }
         .form-input:focus { border-color: #8E24AA; }
-        
         .checkbox-group { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; background: #f9f9f9; padding: 10px; border-radius: 4px; border: 1px solid #eee; }
         .checkbox-label { display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer; color: #333; }
-        
         .btn { padding: 8px 12px; font-size: 13px; font-weight: 600; border: none; border-radius: 4px; cursor: pointer; transition: background 0.2s; color: white; width: 100%; margin-top: 10px; }
         .btn-save { background-color: #8E24AA; } .btn-save:hover { background-color: #6A1B9A; }
         .btn-clear { background-color: #757575; } .btn-clear:hover { background-color: #616161; }
-        
         .table-container { flex: 1; overflow-y: auto; }
         table { width: 100%; border-collapse: collapse; font-size: 13px; }
         th { background: #8E24AA; color: white; text-align: left; padding: 10px; position: sticky; top: 0; }
         td { padding: 10px; border-bottom: 1px solid #eee; color: #333; }
         tr:hover { background: #f3e5f5; }
-        
         .action-link { color: #1976D2; cursor: pointer; font-weight: 600; margin-right: 10px; text-decoration: underline; }
         .action-link.delete { color: #d32f2f; }
         .status { text-align: center; color: #8E24AA; font-weight: bold; font-size: 13px; display: none; margin-top: 10px; }
     </style>
 </head>
 <body>
-
     <div class="panel panel-form">
         <h3>Thông tin Cấp quyền</h3>
         <div class="form-group">
@@ -58,18 +52,12 @@
         <button class="btn btn-clear" onclick="clearForm()">Làm Mới Form</button>
         <div id="status-msg" class="status">Đang xử lý...</div>
     </div>
-
     <div class="panel">
         <h3>Danh sách Cán bộ đã phân quyền</h3>
         <div class="table-container">
             <table>
                 <thead>
-                    <tr>
-                        <th>Họ và tên</th>
-                        <th>Email</th>
-                        <th>Chi tiết Quyền</th>
-                        <th width="100">Thao tác</th>
-                    </tr>
+                    <tr><th>Họ và tên</th><th>Email</th><th>Chi tiết Quyền</th><th width="100">Thao tác</th></tr>
                 </thead>
                 <tbody id="user-table-body">
                     <tr><td colspan="4" style="text-align:center;">Đang tải dữ liệu...</td></tr>
@@ -77,48 +65,39 @@
             </table>
         </div>
     </div>
-
     <script>
+        // Lấy Token an toàn từ thẻ cha (index.html)
+        const getJwtToken = () => window.parent.localStorage.getItem('ht_jwt_token');
+
         document.addEventListener("DOMContentLoaded", function() { loadUsers(); });
 
         function loadUsers() {
             fetch(KETNOI.WEB_APP_URL, {
                 method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                body: JSON.stringify({ action: 'getUsers' })
+                body: JSON.stringify({ action: 'getUsers', credential: getJwtToken() })
             }).then(response => response.json()).then(result => {
                 if (result.status === 'success') { renderTable(result.data); }
+                else { alert(result.message); }
             });
         }
 
         function renderTable(users) {
-            const tbody = document.getElementById('user-table-body');
-            tbody.innerHTML = '';
-            if (users.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Chưa có dữ liệu phân quyền.</td></tr>'; return;
-            }
+            const tbody = document.getElementById('user-table-body'); tbody.innerHTML = '';
+            if (users.length === 0) { tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Chưa có dữ liệu phân quyền.</td></tr>'; return; }
             users.forEach(user => {
-                const tr = document.createElement('tr');
-                let displayRoles = [];
+                const tr = document.createElement('tr'); let displayRoles = [];
                 if (user.roles.includes('taohoso')) displayRoles.push('Tạo hồ sơ');
                 if (user.roles.includes('ganhoso')) displayRoles.push('Gán hồ sơ');
                 if (user.roles.includes('xx')) displayRoles.push('<b style="color:#d32f2f">Quản trị viên</b>');
-
-                tr.innerHTML = `
-                    <td>${user.name}</td>
-                    <td>${user.email}</td>
-                    <td>${displayRoles.join(' | ')}</td>
-                    <td>
-                        <span class="action-link" onclick="editUser('${user.name}', '${user.email}', '${user.roles}')">Sửa</span>
-                        <span class="action-link delete" onclick="deleteUser('${user.email}')">Xóa</span>
-                    </td>
-                `;
+                tr.innerHTML = `<td>${user.name}</td><td>${user.email}</td><td>${displayRoles.join(' | ')}</td>
+                    <td><span class="action-link" onclick="editUser('${user.name}', '${user.email}', '${user.roles}')">Sửa</span>
+                        <span class="action-link delete" onclick="deleteUser('${user.email}')">Xóa</span></td>`;
                 tbody.appendChild(tr);
             });
         }
 
         function editUser(name, email, roles) {
-            document.getElementById('pq-name').value = name;
-            document.getElementById('pq-email').value = email;
+            document.getElementById('pq-name').value = name; document.getElementById('pq-email').value = email;
             document.getElementById('role-taohoso').checked = roles.includes('taohoso');
             document.getElementById('role-ganhoso').checked = roles.includes('ganhoso');
             document.getElementById('role-xx').checked = roles.includes('xx');
@@ -130,25 +109,20 @@
         }
 
         function saveUser() {
-            const name = document.getElementById('pq-name').value.trim();
-            const email = document.getElementById('pq-email').value.trim();
+            const name = document.getElementById('pq-name').value.trim(); const email = document.getElementById('pq-email').value.trim();
             if (!name || !email) { alert("Yêu cầu nhập đủ Họ tên và Email!"); return; }
-
             let roles = [];
             if (document.getElementById('role-taohoso').checked) roles.push('taohoso');
             if (document.getElementById('role-ganhoso').checked) roles.push('ganhoso');
             if (document.getElementById('role-xx').checked) roles.push('xx');
-
             document.getElementById('status-msg').style.display = 'block';
             fetch(KETNOI.WEB_APP_URL, {
                 method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                body: JSON.stringify({ action: 'saveUser', name: name, email: email, roles: roles.join(',') })
+                body: JSON.stringify({ action: 'saveUser', name: name, email: email, roles: roles.join(','), credential: getJwtToken() })
             }).then(response => response.json()).then(result => {
                 document.getElementById('status-msg').style.display = 'none';
-                if (result.status === 'success') {
-                    alert("Cập nhật quyền thành công!"); clearForm(); loadUsers();
-                    window.parent.postMessage('reload_desktop', '*'); // Gửi lệnh ra index.html để làm mới
-                }
+                if (result.status === 'success') { alert("Cập nhật quyền thành công!"); clearForm(); loadUsers(); window.parent.postMessage('reload_desktop', '*'); }
+                else { alert("Lỗi: " + result.message); }
             });
         }
 
@@ -157,13 +131,11 @@
                 document.getElementById('status-msg').style.display = 'block';
                 fetch(KETNOI.WEB_APP_URL, {
                     method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify({ action: 'deleteUser', email: email })
+                    body: JSON.stringify({ action: 'deleteUser', email: email, credential: getJwtToken() })
                 }).then(response => response.json()).then(result => {
                     document.getElementById('status-msg').style.display = 'none';
-                    if (result.status === 'success') {
-                        alert("Đã thu hồi quyền!"); loadUsers();
-                        window.parent.postMessage('reload_desktop', '*');
-                    }
+                    if (result.status === 'success') { alert("Đã thu hồi quyền!"); loadUsers(); window.parent.postMessage('reload_desktop', '*'); }
+                    else { alert("Lỗi: " + result.message); }
                 });
             }
         }
