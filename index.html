@@ -9,8 +9,7 @@
     <title id="sys-title">Cổng thông tin Quản trị</title>
   
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    
-    <script>
+    <script src="https://apis.google.com/js/api.js"></script> <script>
         document.addEventListener("DOMContentLoaded", function() {
             document.getElementById('sys-title').innerText = KETNOI.TIEU_DE_TRANG;
             document.getElementById('sys-favicon').href = KETNOI.LINK_LOGO;
@@ -39,16 +38,7 @@
         .icon-box { width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); pointer-events: none; }
         .icon-box .material-icons { font-size: 28px; color: #ffffff; }
 
-        .bg-1 { background: linear-gradient(135deg, #1976D2, #42A5F5); }
-        .bg-2 { background: linear-gradient(135deg, #F57F17, #FBC02D); }
-        .bg-3 { background: linear-gradient(135deg, #388E3C, #66BB6A); }
-        .bg-4 { background: linear-gradient(135deg, #00796B, #26A69A); }
-        .bg-5 { background: linear-gradient(135deg, #7B1FA2, #AB47BC); }
-        .bg-6 { background: linear-gradient(135deg, #5D4037, #8D6E63); }
-        .bg-7 { background: linear-gradient(135deg, #D32F2F, #EF5350); }
-        .bg-8 { background: linear-gradient(135deg, #E64A19, #FF7043); }
-        .bg-9 { background: linear-gradient(135deg, #455A64, #78909C); }
-        .bg-10 { background: linear-gradient(135deg, #0097A7, #26C6DA); }
+        .bg-1 { background: linear-gradient(135deg, #1976D2, #42A5F5); } .bg-2 { background: linear-gradient(135deg, #F57F17, #FBC02D); } .bg-3 { background: linear-gradient(135deg, #388E3C, #66BB6A); } .bg-4 { background: linear-gradient(135deg, #00796B, #26A69A); } .bg-5 { background: linear-gradient(135deg, #7B1FA2, #AB47BC); } .bg-6 { background: linear-gradient(135deg, #5D4037, #8D6E63); } .bg-7 { background: linear-gradient(135deg, #D32F2F, #EF5350); } .bg-8 { background: linear-gradient(135deg, #E64A19, #FF7043); } .bg-9 { background: linear-gradient(135deg, #455A64, #78909C); } .bg-10 { background: linear-gradient(135deg, #0097A7, #26C6DA); }
 
         .icon-text { color: #ffffff; font-size: 12px; text-align: center; line-height: 1.3; text-shadow: 1px 1px 2px #000000, 0 0 10px rgba(0,0,0,0.8); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; word-wrap: break-word; pointer-events: none; }
 
@@ -58,14 +48,10 @@
         .start-logo { height: 28px; filter: drop-shadow(0 0 2px rgba(255,255,255,0.5)); }
         .start-text { color: #ffffff; font-weight: 600; font-size: 14px; letter-spacing: 0.5px; }
 
-        /* Vùng bên phải Taskbar chứa Nút và Tiện ích */
         .system-tray { display: flex; align-items: center; gap: 10px; color: #ffffff; }
-        
         .btn-taskbar { display: flex; align-items: center; gap: 5px; padding: 6px 12px; font-size: 13px; font-weight: 600; color: #fff; border: none; border-radius: 5px; cursor: pointer; transition: background 0.2s; }
-        .btn-taskbar.blue { background-color: #1976D2; }
-        .btn-taskbar.blue:hover { background-color: #1565C0; }
-        .btn-taskbar.green { background-color: #388E3C; }
-        .btn-taskbar.green:hover { background-color: #2E7D32; }
+        .btn-taskbar.blue { background-color: #1976D2; } .btn-taskbar.blue:hover { background-color: #1565C0; }
+        .btn-taskbar.green { background-color: #388E3C; } .btn-taskbar.green:hover { background-color: #2E7D32; }
         .btn-taskbar .material-icons { font-size: 16px; }
 
         .tray-icon { width: 36px; height: 36px; display: flex; justify-content: center; align-items: center; border-radius: 4px; cursor: pointer; transition: background 0.2s; }
@@ -75,11 +61,11 @@
 
         .win-tooltip { position: fixed; background: rgba(255, 255, 255, 0.95); border: 1px solid #bbbbbb; padding: 6px 12px; border-radius: 4px; font-size: 13px; color: #333333; box-shadow: 2px 2px 8px rgba(0,0,0,0.25); pointer-events: none; opacity: 0; z-index: 9999; max-width: 250px; line-height: 1.4; transition: opacity 0.15s ease-in-out; }
 
-        .window-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.3); display: none; justify-content: center; align-items: center; z-index: 2000; }
+        .window-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.4); display: none; justify-content: center; align-items: center; z-index: 2000; }
         .window-container { background: #ffffff; border-radius: 8px; box-shadow: 0 12px 40px rgba(0,0,0,0.4); display: flex; flex-direction: column; overflow: hidden; animation: popIn 0.2s ease-out; }
         
         #window-utilities .window-container { width: 85vw; height: 85vh; }
-        #window-gan-hoso .window-container { width: 420px; height: 380px; }
+        #window-gan-hoso .window-container { width: 420px; height: auto; }
 
         @keyframes popIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         .window-titlebar { background: #e0e0e0; padding: 8px 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #cccccc; }
@@ -88,12 +74,23 @@
         .window-close { background: transparent; border: none; color: #333; font-weight: bold; font-size: 16px; cursor: pointer; width: 30px; height: 30px; border-radius: 4px; display: flex; align-items: center; justify-content: center; }
         .window-close:hover { background: #e81123; color: white; }
         .window-content { flex: 1; width: 100%; border: none; }
+
+        /* Giao diện Form Gán Hồ Sơ (Native) */
+        .form-native { padding: 20px; user-select: text; }
+        .form-native .form-group { margin-bottom: 15px; }
+        .form-native label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 5px; color: #333; }
+        .form-native input, .form-native select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; box-sizing: border-box; font-family: inherit;}
+        .form-native .input-group { display: flex; gap: 8px; }
+        .form-native .btn-picker { background: #F57C00; color: white; border: none; padding: 0 12px; border-radius: 4px; cursor: pointer; font-weight: 600; white-space: nowrap; font-size: 13px;}
+        .form-native .btn-picker:hover { background: #EF6C00; }
+        .form-native .btn-submit { background-color: #1976D2; color: #ffffff; border: none; padding: 10px; font-size: 14px; font-weight: 600; border-radius: 4px; cursor: pointer; width: 100%; margin-top: 10px; }
+        .form-native .btn-submit:hover { background-color: #1565C0; }
+        .form-native .status-text { text-align: center; font-size: 13px; font-weight: bold; color: #1976D2; margin-top: 10px; display: none; }
     </style>
 </head>
 <body>
 
-    <div id="desktop-area">
-    </div>
+    <div id="desktop-area"></div>
 
     <div class="taskbar">
         <div class="start-btn" title="Hệ thống Quản trị Điều hành">
@@ -146,56 +143,135 @@
                 </div>
                 <button class="window-close" onclick="toggleHoSoModal(false)" title="Đóng cửa sổ">✕</button>
             </div>
-            <iframe id="iframe-hoso" src="" class="window-content" title="Gán Hồ sơ"></iframe>
+            <div class="form-native">
+                <div class="form-group">
+                    <label>Họ và tên (Cột A):</label>
+                    <input type="text" id="hs-hoten" placeholder="Nhập họ và tên...">
+                </div>
+                <div class="form-group">
+                    <label>Tệp hồ sơ trên Drive (Cột B):</label>
+                    <div class="input-group">
+                        <input type="text" id="hs-link" placeholder="Link tệp sẽ hiển thị ở đây..." readonly>
+                        <button class="btn-picker" onclick="khoiTaoGooglePicker()">Chọn hồ sơ</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Giới tính (Cột C):</label>
+                    <select id="hs-gioitinh">
+                        <option value="">-- Chọn giới tính --</option>
+                        <option value="x">Nam (x)</option>
+                        <option value="xx">Nữ (xx)</option>
+                    </select>
+                </div>
+                <button class="btn-submit" onclick="xuLyLuuHoSo()">Lưu Dữ Liệu Hồ Sơ</button>
+                <div id="form-status" class="status-text">Đang xử lý, vui lòng chờ...</div>
+            </div>
         </div>
     </div>
 
 <script>
-    /* =========================================================================
-       0. KHỐI NẠP DỮ LIỆU ĐỘNG TỪ GOOGLE SHEET (API FETCH)
-       ========================================================================= */
     let icons = [];
     let isDragging = false;
     const tooltip = document.getElementById('win-tooltip');
     const desktopArea = document.getElementById('desktop-area');
 
+    /* =========================================================================
+       0. KHỐI TƯƠNG TÁC API VỚI GOOGLE APPS SCRIPT
+       ========================================================================= */
     function loadDesktopData() {
         fetch(KETNOI.WEB_APP_URL, {
             method: 'POST',
-            headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({ action: 'getIcons' }) // Gọi luồng lấy danh sách
         })
         .then(response => response.json())
         .then(result => {
             if (result.status === 'success') { renderIconsFromData(result.data); } 
-            else { console.error("Lỗi từ máy chủ:", result.message); }
         })
-        .catch(error => { console.error("Không thể kết nối đến hệ thống máy chủ:", error); });
+        .catch(error => console.error("Lỗi:", error));
     }
 
-    window.addEventListener("DOMContentLoaded", function() {
-        loadDesktopData();
-    });
+    window.addEventListener("DOMContentLoaded", function() { loadDesktopData(); });
 
-    window.addEventListener('message', function(event) {
-        if (event.data === 'reload_desktop') {
-            toggleHoSoModal(false); 
-            loadDesktopData();      
-        }
-    });
-
-    // Hàm đã được sửa thuật toán tải iframe
     function toggleHoSoModal(isShow) {
-        var win = document.getElementById('window-gan-hoso');
-        var iframe = document.getElementById('iframe-hoso');
-        if (isShow) {
-            // Khắc phục lỗi DOM: Bắt buộc dùng getAttribute để kiểm tra gốc thay vì .src
-            if (iframe.getAttribute('src') === "" || iframe.getAttribute('src') === null) { 
-                iframe.src = KETNOI.WEB_APP_URL + "?page=taohoso"; 
-            }
-            win.style.display = 'flex';
-        } else {
-            win.style.display = 'none';
+        document.getElementById('window-gan-hoso').style.display = isShow ? 'flex' : 'none';
+        if(!isShow) {
+            // Xóa rỗng form khi đóng
+            document.getElementById('hs-hoten').value = '';
+            document.getElementById('hs-link').value = '';
+            document.getElementById('hs-gioitinh').value = '';
         }
+    }
+
+    // THUẬT TOÁN GỌI GOOGLE PICKER TRỰC TIẾP TRÊN GITHUB
+    function khoiTaoGooglePicker() {
+        const statusText = document.getElementById('form-status');
+        statusText.innerText = "Đang kết nối kho dữ liệu Drive...";
+        statusText.style.display = 'block';
+
+        // Gọi luồng lấy Token từ Apps Script
+        fetch(KETNOI.WEB_APP_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({ action: 'getToken' })
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.status === 'success' && result.token) {
+                statusText.style.display = 'none';
+                gapi.load('picker', function() {
+                    var picker = new google.picker.PickerBuilder()
+                        .addView(google.picker.ViewId.DOCS)
+                        .setOAuthToken(result.token)
+                        .setCallback(function(data) {
+                            if (data.action == google.picker.Action.PICKED) {
+                                document.getElementById('hs-link').value = data.docs[0].url;
+                            }
+                        })
+                        .build();
+                    picker.setVisible(true);
+                });
+            } else {
+                alert("Lỗi kết nối Drive. Vui lòng thử lại.");
+                statusText.style.display = 'none';
+            }
+        });
+    }
+
+    // THUẬT TOÁN GHI DỮ LIỆU
+    function xuLyLuuHoSo() {
+        var hoTen = document.getElementById('hs-hoten').value.trim();
+        var link = document.getElementById('hs-link').value.trim();
+        var gioiTinh = document.getElementById('hs-gioitinh').value;
+
+        if (!hoTen || !gioiTinh || !link) {
+            alert("Đề nghị điền đầy đủ Họ tên, Giới tính và Chọn tệp hồ sơ!");
+            return;
+        }
+
+        const statusText = document.getElementById('form-status');
+        statusText.innerText = "Đang lưu dữ liệu vào hệ thống...";
+        statusText.style.display = 'block';
+
+        fetch(KETNOI.WEB_APP_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({
+                action: 'saveProfile',
+                hoTen: hoTen,
+                link: link,
+                gioiTinh: gioiTinh
+            })
+        })
+        .then(response => response.json())
+        .then(result => {
+            statusText.style.display = 'none';
+            if (result.status === 'success') {
+                alert("Gán hồ sơ thành công!");
+                toggleHoSoModal(false);
+                loadDesktopData(); // Cập nhật lại màn hình ngay lập tức
+            } else { alert("Lỗi ghi dữ liệu: " + result.message); }
+        });
     }
 
     function renderIconsFromData(data) {
@@ -213,15 +289,8 @@
             }
 
             const div = document.createElement('div');
-            div.className = 'desktop-icon';
-            div.setAttribute('data-id', index + 1);
-            div.setAttribute('data-desc', 'Nhấn để mở liên kết thư mục');
-            
-            div.innerHTML = `
-                <div class="icon-box ${bgClass}">${iconContent}</div>
-                <span class="icon-text">${item.name}</span>
-            `;
-            
+            div.className = 'desktop-icon'; div.setAttribute('data-id', index + 1); div.setAttribute('data-desc', 'Nhấn để mở liên kết thư mục');
+            div.innerHTML = `<div class="icon-box ${bgClass}">${iconContent}</div><span class="icon-text">${item.name}</span>`;
             div.onclick = function() { navigateTo(item.url, true); };
             desktopArea.appendChild(div);
         });
@@ -237,15 +306,13 @@
        ========================================================================= */
     function navigateTo(url, isNewTab) {
         if (isDragging) { isDragging = false; return; }
-        if (isNewTab) { window.open(url, '_blank'); } 
-        else { window.location.href = url; }
+        if (isNewTab) { window.open(url, '_blank'); } else { window.location.href = url; }
     }
 
     function setupTooltipEvents() {
         icons.forEach(icon => {
             icon.addEventListener('mouseenter', function(e) {
-                if (isDragging) return; 
-                tooltip.innerText = this.getAttribute('data-desc'); tooltip.style.opacity = '1';
+                if (isDragging) return; tooltip.innerText = this.getAttribute('data-desc'); tooltip.style.opacity = '1';
             });
             icon.addEventListener('mousemove', function(e) {
                 tooltip.style.left = (e.clientX + 15) + 'px'; tooltip.style.top = (e.clientY + 15) + 'px';
@@ -255,30 +322,20 @@
     }
 
     /* =========================================================================
-       2. KHỐI ĐỒNG HỒ THỜI GIAN THỰC
+       2. KHỐI ĐỒNG HỒ VÀ LAYOUT
        ========================================================================= */
     function updateClock() {
         const now = new Date();
-        const timeStr = now.toLocaleTimeString('vi-VN', {hour: '2-digit', minute:'2-digit'});
-        const dateStr = now.toLocaleDateString('vi-VN', {day: '2-digit', month: '2-digit', year: 'numeric'});
-        document.getElementById('sys-clock').innerHTML = `${timeStr}<br>${dateStr}`;
+        document.getElementById('sys-clock').innerHTML = `${now.toLocaleTimeString('vi-VN', {hour: '2-digit', minute:'2-digit'})}<br>${now.toLocaleDateString('vi-VN', {day: '2-digit', month: '2-digit', year: 'numeric'})}`;
     }
-    setInterval(updateClock, 1000);
-    updateClock();
+    setInterval(updateClock, 1000); updateClock();
 
-    /* =========================================================================
-       3. THUẬT TOÁN ĐÓNG BĂNG TỌA ĐỘ VÀ KÉO THẢ
-       ========================================================================= */
     function initializeLayout() {
         const savedPositions = JSON.parse(localStorage.getItem('ht_desktop_positions_v3')) || {};
-        
         icons.forEach(icon => {
             const id = icon.getAttribute('data-id');
-            if (savedPositions[id]) {
-                icon.style.position = 'absolute'; icon.style.left = savedPositions[id].left; icon.style.top = savedPositions[id].top; icon.style.margin = '0'; 
-            }
+            if (savedPositions[id]) { icon.style.position = 'absolute'; icon.style.left = savedPositions[id].left; icon.style.top = savedPositions[id].top; icon.style.margin = '0'; }
         });
-
         setTimeout(() => {
             icons.forEach(icon => {
                 if (icon.style.position !== 'absolute') {
@@ -291,39 +348,23 @@
     }
 
     let draggedIcon = null, offsetX = 0, offsetY = 0, dragThresholdPassed = false, startX, startY;
-
-    function setupDragEvents() {
-        icons.forEach(icon => {
-            icon.addEventListener('mousedown', startDrag); icon.addEventListener('touchstart', startDrag, {passive: false});
-        });
-    }
+    function setupDragEvents() { icons.forEach(icon => { icon.addEventListener('mousedown', startDrag); icon.addEventListener('touchstart', startDrag, {passive: false}); }); }
 
     function startDrag(e) {
         if (e.target.closest('.icon-box') === null && e.target.closest('.icon-text') === null && e.target !== this) return;
         dragThresholdPassed = false; draggedIcon = this;
-        
-        const clientX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
-        const clientY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY;
+        const clientX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX; const clientY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY;
         startX = clientX; startY = clientY;
-
-        const rect = draggedIcon.getBoundingClientRect();
-        offsetX = clientX - rect.left; offsetY = clientY - rect.top;
+        const rect = draggedIcon.getBoundingClientRect(); offsetX = clientX - rect.left; offsetY = clientY - rect.top;
         tooltip.style.opacity = '0'; 
-
         document.addEventListener('mousemove', drag); document.addEventListener('touchmove', drag, {passive: false});
         document.addEventListener('mouseup', stopDrag); document.addEventListener('touchend', stopDrag);
     }
 
     function drag(e) {
         if (!draggedIcon) return;
-        const clientX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
-        const clientY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY;
-
-        if (Math.abs(clientX - startX) > 3 || Math.abs(clientY - startY) > 3) {
-            dragThresholdPassed = true; isDragging = true;
-            draggedIcon.style.zIndex = '9999'; draggedIcon.style.opacity = '0.7'; e.preventDefault(); 
-        }
-
+        const clientX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX; const clientY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY;
+        if (Math.abs(clientX - startX) > 3 || Math.abs(clientY - startY) > 3) { dragThresholdPassed = true; isDragging = true; draggedIcon.style.zIndex = '9999'; draggedIcon.style.opacity = '0.7'; e.preventDefault(); }
         if (dragThresholdPassed) {
             const areaRect = desktopArea.getBoundingClientRect();
             let newLeft = Math.max(0, Math.min(clientX - areaRect.left - offsetX, areaRect.width - draggedIcon.offsetWidth));
@@ -336,10 +377,8 @@
         if (!draggedIcon) return;
         draggedIcon.style.zIndex = ''; draggedIcon.style.opacity = '1';
         if (dragThresholdPassed) { savePositions(); }
-        
         document.removeEventListener('mousemove', drag); document.removeEventListener('touchmove', drag);
         document.removeEventListener('mouseup', stopDrag); document.removeEventListener('touchend', stopDrag);
-        
         draggedIcon = null; setTimeout(() => { isDragging = false; }, 50);
     }
 
@@ -359,18 +398,12 @@
         var currentUrl = localStorage.getItem("ht_dashboard_bg") || "";
         var newUrl = prompt("CẤU HÌNH HÌNH NỀN DESKTOP\n\nNhập đường dẫn (URL) hình ảnh:\n(Để trống nếu muốn quay về hình nền mặc định)", currentUrl);
         if (newUrl !== null) {
-            if (newUrl.trim() === "") {
-                localStorage.removeItem("ht_dashboard_bg"); document.documentElement.style.setProperty('--default-bg', "url('https://i.ibb.co/4gCSYHV6/congthongtin1.jpg')");
-            } else {
-                localStorage.setItem("ht_dashboard_bg", newUrl.trim()); document.documentElement.style.setProperty('--default-bg', "url('" + newUrl.trim() + "')");
-            }
+            if (newUrl.trim() === "") { localStorage.removeItem("ht_dashboard_bg"); document.documentElement.style.setProperty('--default-bg', "url('https://i.ibb.co/4gCSYHV6/congthongtin1.jpg')"); } 
+            else { localStorage.setItem("ht_dashboard_bg", newUrl.trim()); document.documentElement.style.setProperty('--default-bg', "url('" + newUrl.trim() + "')"); }
         }
     }
 
-    function toggleUtilities(isShow) {
-        var win = document.getElementById('window-utilities');
-        if (isShow) { win.style.display = 'flex'; } else { win.style.display = 'none'; }
-    }
+    function toggleUtilities(isShow) { document.getElementById('window-utilities').style.display = isShow ? 'flex' : 'none'; }
 </script>
 </body>
 </html>
