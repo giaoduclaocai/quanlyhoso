@@ -81,7 +81,8 @@
         .form-native { padding: 20px; user-select: text; }
         .form-native .form-group { margin-bottom: 15px; }
         .form-native label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 5px; color: #333; }
-        .form-native input, .form-native select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; box-sizing: border-box; font-family: inherit;}
+        .form-native input, .form-native select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; box-sizing: border-box; font-family: inherit; outline: none; transition: border-color 0.2s;}
+        .form-native input:focus, .form-native select:focus { border-color: #1976D2; }
         .form-native .input-group { display: flex; gap: 8px; }
         .form-native .btn-picker { display: flex; align-items: center; gap: 4px; background: #F57C00; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: 600; white-space: nowrap; font-size: 12px; transition: background 0.2s;}
         .form-native .btn-picker:hover { background: #EF6C00; }
@@ -147,12 +148,12 @@
             </div>
             <div class="form-native">
                 <div class="form-group">
-                    <label>Họ và tên (Cột A):</label>
+                    <label>Họ và tên (Cột A): <span style="color: red;">*</span></label>
                     <input type="text" id="hs-hoten" placeholder="Nhập họ và tên cán bộ/giáo viên...">
                 </div>
                 
                 <div class="form-group">
-                    <label>Tệp hồ sơ trên Drive (Cột B):</label>
+                    <label>Tệp hồ sơ trên Drive (Cột B): <span style="color: red;">*</span></label>
                     <input type="text" id="hs-link" placeholder="Dán link thủ công hoặc chọn từ hệ thống..." style="margin-bottom: 8px;">
                     
                     <div class="input-group">
@@ -170,7 +171,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Giới tính (Cột C):</label>
+                    <label>Giới tính (Cột C): <span style="color: red;">*</span></label>
                     <select id="hs-gioitinh">
                         <option value="">-- Chọn giới tính --</option>
                         <option value="x">Nam (x)</option>
@@ -211,18 +212,20 @@
     function toggleHoSoModal(isShow) {
         document.getElementById('window-gan-hoso').style.display = isShow ? 'flex' : 'none';
         if(!isShow) {
-            document.getElementById('hs-hoten').value = '';
-            document.getElementById('hs-link').value = '';
-            document.getElementById('hs-gioitinh').value = '';
-            document.getElementById('huong-dan-tk').style.display = 'none'; // Ẩn hướng dẫn
+            var elHoTen = document.getElementById('hs-hoten');
+            var elLink = document.getElementById('hs-link');
+            var elGioiTinh = document.getElementById('hs-gioitinh');
+
+            // Xóa dữ liệu và Reset cảnh báo màu đỏ khi đóng UI
+            elHoTen.value = ''; elHoTen.style.borderColor = '#ccc';
+            elLink.value = ''; elLink.style.borderColor = '#ccc';
+            elGioiTinh.value = ''; elGioiTinh.style.borderColor = '#ccc';
+            document.getElementById('huong-dan-tk').style.display = 'none'; 
         }
     }
 
-    // MỞ GIAO DIỆN CHỌN TÀI KHOẢN KHÁC (Tính năng bổ sung)
     function moDriveTaiKhoanKhac() {
-        // Gọi URL định tuyến Account Chooser của Google, sau đó trả về Drive
         window.open('https://accounts.google.com/AccountChooser?continue=https://drive.google.com/drive/', '_blank');
-        // Hiển thị khung hướng dẫn copy/paste
         document.getElementById('huong-dan-tk').style.display = 'block';
     }
 
@@ -231,7 +234,6 @@
         statusText.innerText = "Đang kết nối không gian Drive...";
         statusText.style.display = 'block';
 
-        // Ẩn Form để có không gian Picker
         document.getElementById('window-gan-hoso').style.display = 'none';
 
         fetch(KETNOI.WEB_APP_URL, {
@@ -255,7 +257,9 @@
                         .setOAuthToken(result.token)
                         .setCallback(function(data) {
                             if (data.action == google.picker.Action.PICKED) {
-                                document.getElementById('hs-link').value = data.docs[0].url;
+                                var elLink = document.getElementById('hs-link');
+                                elLink.value = data.docs[0].url;
+                                elLink.style.borderColor = '#ccc'; // Xóa viền đỏ nếu chọn thành công
                                 document.getElementById('window-gan-hoso').style.display = 'flex';
                             } else if (data.action == google.picker.Action.CANCEL) {
                                 document.getElementById('window-gan-hoso').style.display = 'flex';
@@ -275,14 +279,31 @@
         });
     }
 
+    // THUẬT TOÁN KIỂM TRA DỮ LIỆU BẮT BUỘC (VALIDATION) TRƯỚC KHI LƯU
     function xuLyLuuHoSo() {
-        var hoTen = document.getElementById('hs-hoten').value.trim();
-        var link = document.getElementById('hs-link').value.trim();
-        var gioiTinh = document.getElementById('hs-gioitinh').value;
+        var elHoTen = document.getElementById('hs-hoten');
+        var elLink = document.getElementById('hs-link');
+        var elGioiTinh = document.getElementById('hs-gioitinh');
 
-        if (!hoTen || !gioiTinh || !link) {
-            alert("Đề nghị điền đầy đủ Họ tên, Giới tính và Chọn tệp hồ sơ!");
-            return;
+        var hoTen = elHoTen.value.trim();
+        var link = elLink.value.trim();
+        var gioiTinh = elGioiTinh.value;
+
+        // Đặt lại viền mặc định
+        elHoTen.style.borderColor = '#ccc';
+        elLink.style.borderColor = '#ccc';
+        elGioiTinh.style.borderColor = '#ccc';
+
+        var hasError = false;
+
+        // Kiểm tra từng trường, nếu trống thì đổi viền sang đỏ
+        if (!hoTen) { elHoTen.style.borderColor = 'red'; hasError = true; }
+        if (!link) { elLink.style.borderColor = 'red'; hasError = true; }
+        if (!gioiTinh) { elGioiTinh.style.borderColor = 'red'; hasError = true; }
+
+        if (hasError) {
+            alert("Yêu cầu bắt buộc: Thầy/Cô vui lòng điền đầy đủ Họ tên, Giới tính và Cung cấp link tệp hồ sơ trước khi lưu dữ liệu!");
+            return; // Chặn quá trình lưu
         }
 
         const statusText = document.getElementById('form-status');
