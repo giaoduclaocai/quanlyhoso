@@ -152,7 +152,7 @@
                     <label>Tệp hồ sơ trên Drive (Cột B):</label>
                     <div class="input-group">
                         <input type="text" id="hs-link" placeholder="Link tệp sẽ hiển thị ở đây..." readonly>
-                        <button class="btn-picker" onclick="khoiTaoGooglePicker()">Chọn hồ sơ</button>
+                        <button class="btn-picker" onclick="khoiTaoGooglePicker()">Chọn tệp</button>
                     </div>
                 </div>
                 <div class="form-group">
@@ -182,7 +182,7 @@
         fetch(KETNOI.WEB_APP_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-            body: JSON.stringify({ action: 'getIcons' }) // Gọi luồng lấy danh sách
+            body: JSON.stringify({ action: 'getIcons' }) 
         })
         .then(response => response.json())
         .then(result => {
@@ -196,20 +196,21 @@
     function toggleHoSoModal(isShow) {
         document.getElementById('window-gan-hoso').style.display = isShow ? 'flex' : 'none';
         if(!isShow) {
-            // Xóa rỗng form khi đóng
             document.getElementById('hs-hoten').value = '';
             document.getElementById('hs-link').value = '';
             document.getElementById('hs-gioitinh').value = '';
         }
     }
 
-    // THUẬT TOÁN GỌI GOOGLE PICKER TRỰC TIẾP TRÊN GITHUB
+    // THUẬT TOÁN GỌI GOOGLE PICKER ĐƯỢC ĐIỀU CHỈNH THEO YÊU CẦU MỚI
     function khoiTaoGooglePicker() {
         const statusText = document.getElementById('form-status');
-        statusText.innerText = "Đang kết nối kho dữ liệu Drive...";
+        statusText.innerText = "Đang kết nối không gian Drive...";
         statusText.style.display = 'block';
 
-        // Gọi luồng lấy Token từ Apps Script
+        // 1. Ẩn UI Gán Hồ Sơ để giải phóng không gian màn hình cho Picker
+        document.getElementById('window-gan-hoso').style.display = 'none';
+
         fetch(KETNOI.WEB_APP_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'text/plain;charset=utf-8' },
@@ -217,15 +218,26 @@
         })
         .then(response => response.json())
         .then(result => {
+            statusText.style.display = 'none';
             if (result.status === 'success' && result.token) {
-                statusText.style.display = 'none';
                 gapi.load('picker', function() {
+                    // Cấu hình Ưu tiên chọn Thư mục (Tệp hồ sơ) thay vì file lẻ
+                    var folderView = new google.picker.DocsView(google.picker.ViewId.FOLDERS)
+                        .setIncludeFolders(true)
+                        .setSelectFolderEnabled(true);
+
                     var picker = new google.picker.PickerBuilder()
-                        .addView(google.picker.ViewId.DOCS)
+                        .enableFeature(google.picker.Feature.SUPPORT_DRIVES) // Hỗ trợ xem các Bộ nhớ dùng chung
+                        .addView(folderView) // Tab hiển thị thư mục
+                        .addView(google.picker.ViewId.DOCS) // Dự phòng tab hiển thị file lẻ
                         .setOAuthToken(result.token)
                         .setCallback(function(data) {
+                            // 2. Khôi phục UI dù người dùng chọn thành công hay Hủy bỏ
                             if (data.action == google.picker.Action.PICKED) {
                                 document.getElementById('hs-link').value = data.docs[0].url;
+                                document.getElementById('window-gan-hoso').style.display = 'flex';
+                            } else if (data.action == google.picker.Action.CANCEL) {
+                                document.getElementById('window-gan-hoso').style.display = 'flex';
                             }
                         })
                         .build();
@@ -233,12 +245,15 @@
                 });
             } else {
                 alert("Lỗi kết nối Drive. Vui lòng thử lại.");
-                statusText.style.display = 'none';
+                document.getElementById('window-gan-hoso').style.display = 'flex'; // Khôi phục UI nếu lỗi mạng
             }
+        })
+        .catch(err => {
+            alert("Lỗi mạng: " + err);
+            document.getElementById('window-gan-hoso').style.display = 'flex'; // Khôi phục UI nếu lỗi
         });
     }
 
-    // THUẬT TOÁN GHI DỮ LIỆU
     function xuLyLuuHoSo() {
         var hoTen = document.getElementById('hs-hoten').value.trim();
         var link = document.getElementById('hs-link').value.trim();
@@ -256,12 +271,7 @@
         fetch(KETNOI.WEB_APP_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-            body: JSON.stringify({
-                action: 'saveProfile',
-                hoTen: hoTen,
-                link: link,
-                gioiTinh: gioiTinh
-            })
+            body: JSON.stringify({ action: 'saveProfile', hoTen: hoTen, link: link, gioiTinh: gioiTinh })
         })
         .then(response => response.json())
         .then(result => {
@@ -269,7 +279,7 @@
             if (result.status === 'success') {
                 alert("Gán hồ sơ thành công!");
                 toggleHoSoModal(false);
-                loadDesktopData(); // Cập nhật lại màn hình ngay lập tức
+                loadDesktopData(); 
             } else { alert("Lỗi ghi dữ liệu: " + result.message); }
         });
     }
