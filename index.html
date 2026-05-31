@@ -45,6 +45,7 @@
         .btn-taskbar { display: flex; align-items: center; gap: 5px; padding: 6px 12px; font-size: 13px; font-weight: 600; color: #fff; border: none; border-radius: 5px; cursor: pointer; transition: background 0.2s; }
         .btn-taskbar.blue { background-color: #1976D2; } .btn-taskbar.blue:hover { background-color: #1565C0; }
         .btn-taskbar.green { background-color: #388E3C; } .btn-taskbar.green:hover { background-color: #2E7D32; }
+        .btn-taskbar.red { background-color: #d32f2f; } .btn-taskbar.red:hover { background-color: #c62828; }
         .btn-taskbar.purple { background-color: #8E24AA; } .btn-taskbar.purple:hover { background-color: #6A1B9A; }
         .btn-taskbar .material-icons { font-size: 16px; }
         .tray-icon { width: 36px; height: 36px; display: flex; justify-content: center; align-items: center; border-radius: 4px; cursor: pointer; transition: background 0.2s; }
@@ -56,6 +57,7 @@
         .window-container { background: #ffffff; border-radius: 8px; box-shadow: 0 12px 40px rgba(0,0,0,0.4); display: flex; flex-direction: column; overflow: hidden; animation: popIn 0.2s ease-out; }
         #window-utilities .window-container { width: 85vw; height: 85vh; }
         #window-gan-hoso .window-container { width: 440px; height: auto; }
+        #window-xoa-hoso .window-container { width: 440px; height: auto; }
         #window-phanquyen .window-container { width: 85vw; height: 85vh; max-width: 1100px;} 
         @keyframes popIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         .window-titlebar { background: #e0e0e0; padding: 8px 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #cccccc; }
@@ -73,7 +75,7 @@
         .form-native .input-group { display: flex; gap: 8px; }
         .form-native .btn-picker { display: flex; align-items: center; gap: 4px; background: #F57C00; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: 600; white-space: nowrap; font-size: 12px; transition: background 0.2s;}
         .form-native .btn-picker:hover { background: #EF6C00; }
-        .form-native .btn-submit { background-color: #1976D2; color: #ffffff; border: none; padding: 10px; font-size: 14px; font-weight: 600; border-radius: 4px; cursor: pointer; width: 100%; margin-top: 10px; }
+        .form-native .btn-submit { background-color: #1976D2; color: #ffffff; border: none; padding: 10px; font-size: 14px; font-weight: 600; border-radius: 4px; cursor: pointer; width: 100%; margin-top: 10px; transition: background 0.2s;}
         .form-native .btn-submit:hover { background-color: #1565C0; }
         .form-native .status-text { text-align: center; font-size: 13px; font-weight: bold; color: #1976D2; margin-top: 10px; display: none; }
 
@@ -110,6 +112,9 @@
             <button class="btn-taskbar green" id="btn-assign-profile" style="display:none;" onclick="toggleHoSoModal(true)">
                 <span class="material-icons">attachment</span> Gán hồ sơ
             </button>
+            <button class="btn-taskbar red" id="btn-delete-profile" style="display:none;" onclick="toggleXoaHoSoModal(true)">
+                <span class="material-icons">delete</span> Xóa hồ sơ
+            </button>
             <button class="btn-taskbar purple" id="btn-auth-profile" style="display:none;" onclick="togglePhanQuyenModal(true)">
                 <span class="material-icons">manage_accounts</span> Cấp quyền
             </button>
@@ -134,6 +139,7 @@
         </div>
     </div>
 
+    <!-- UI GÁN HỒ SƠ -->
     <div id="window-gan-hoso" class="window-overlay">
         <div class="window-container">
             <div class="window-titlebar">
@@ -168,6 +174,27 @@
         </div>
     </div>
 
+    <!-- UI XÓA HỒ SƠ -->
+    <div id="window-xoa-hoso" class="window-overlay">
+        <div class="window-container">
+            <div class="window-titlebar">
+                <div class="window-title"><span class="material-icons" style="color:#d32f2f">delete</span> Công cụ Xóa Hồ sơ (Icon)</div>
+                <button class="window-close" onclick="toggleXoaHoSoModal(false)">✕</button>
+            </div>
+            <div class="form-native">
+                <div class="form-group">
+                    <label>Chọn Hồ sơ cần Xóa khỏi Hệ thống:</label>
+                    <select id="del-hoso-select" style="cursor: pointer; width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                        <option value="">-- Đang tải danh sách --</option>
+                    </select>
+                </div>
+                <button class="form-native btn-submit" style="background-color: #d32f2f;" onclick="xuLyXoaHoSo()">Xác Nhận Xóa Hồ Sơ</button>
+                <div id="del-form-status" class="status-text" style="color: #d32f2f;">Đang xử lý...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- UI PHÂN QUYỀN NATIVE -->
     <div id="window-phanquyen" class="window-overlay">
         <div class="window-container">
             <div class="window-titlebar">
@@ -190,6 +217,7 @@
                         <div class="checkbox-group">
                             <label class="checkbox-label"><input type="checkbox" id="role-taohoso" value="taohoso"> Nút Tạo hồ sơ</label>
                             <label class="checkbox-label"><input type="checkbox" id="role-ganhoso" value="ganhoso"> Nút Gán hồ sơ</label>
+                            <label class="checkbox-label"><input type="checkbox" id="role-xoahoso" value="xoahoso"> Nút Xóa hồ sơ</label>
                             <label class="checkbox-label" style="color:#d32f2f; font-weight: bold;">
                                 <input type="checkbox" id="role-xx" value="xx"> Quản trị viên (Cấp quyền)
                             </label>
@@ -218,6 +246,7 @@
 <script>
     let icons = []; let isDragging = false; const tooltip = document.getElementById('win-tooltip'); const desktopArea = document.getElementById('desktop-area');
     let tokenClient; let pickerAccessToken = null;
+    let globalProfiles = []; // Lưu trữ tạm danh sách hồ sơ để dùng cho Cửa sổ Xóa
 
     /* =========================================================================
        0. KHỐI XÁC THỰC GOOGLE VÀ NẠP DỮ LIỆU CHÍNH DANH
@@ -259,17 +288,25 @@
     }
 
     function apDungPhanQuyen(roles) {
-        const btnCreate = document.getElementById('btn-create-profile'); const btnAssign = document.getElementById('btn-assign-profile'); const btnAuth = document.getElementById('btn-auth-profile');
-        btnCreate.style.display = 'none'; btnAssign.style.display = 'none'; btnAuth.style.display = 'none';
-        if (roles.includes('xx')) { btnCreate.style.display = 'flex'; btnAssign.style.display = 'flex'; btnAuth.style.display = 'flex'; } 
+        const btnCreate = document.getElementById('btn-create-profile'); 
+        const btnAssign = document.getElementById('btn-assign-profile'); 
+        const btnDelete = document.getElementById('btn-delete-profile'); 
+        const btnAuth = document.getElementById('btn-auth-profile');
+        
+        btnCreate.style.display = 'none'; btnAssign.style.display = 'none'; btnDelete.style.display = 'none'; btnAuth.style.display = 'none';
+        
+        if (roles.includes('xx')) { 
+            btnCreate.style.display = 'flex'; btnAssign.style.display = 'flex'; btnDelete.style.display = 'flex'; btnAuth.style.display = 'flex'; 
+        } 
         else {
             if (roles.includes('taohoso')) btnCreate.style.display = 'flex';
             if (roles.includes('ganhoso')) btnAssign.style.display = 'flex';
+            if (roles.includes('xoahoso')) btnDelete.style.display = 'flex';
         }
     }
 
     /* =========================================================================
-       1. KHỐI QUẢN LÝ GIAO DIỆN (UI) VÀ PICKER
+       1. KHỐI QUẢN LÝ GIAO DIỆN (UI), PICKER VÀ XÓA HỒ SƠ
        ========================================================================= */
     function toggleHoSoModal(isShow) {
         document.getElementById('window-gan-hoso').style.display = isShow ? 'flex' : 'none';
@@ -278,6 +315,41 @@
             elHoTen.value = ''; elHoTen.style.borderColor = '#ccc'; elLink.value = ''; elLink.style.borderColor = '#ccc'; elGioiTinh.value = ''; elGioiTinh.style.borderColor = '#ccc';
             document.getElementById('huong-dan-tk').style.display = 'none'; 
         }
+    }
+
+    function toggleXoaHoSoModal(isShow) {
+        document.getElementById('window-xoa-hoso').style.display = isShow ? 'flex' : 'none';
+        if (isShow) {
+            const select = document.getElementById('del-hoso-select');
+            select.innerHTML = '<option value="">-- Chọn hồ sơ cần xóa --</option>';
+            globalProfiles.forEach((item, index) => {
+                const opt = document.createElement('option');
+                opt.value = index; 
+                opt.text = item.name;
+                select.appendChild(opt);
+            });
+            document.getElementById('del-form-status').style.display = 'none';
+        }
+    }
+
+    function xuLyXoaHoSo() {
+        const select = document.getElementById('del-hoso-select');
+        const selectedIndex = select.value;
+        if (selectedIndex === "") { alert("Thầy/Cô vui lòng chọn một hồ sơ cụ thể để xóa!"); return; }
+
+        const profileToDelete = globalProfiles[selectedIndex];
+        if (!confirm("CẢNH BÁO: Thầy/Cô có chắc chắn muốn XÓA VĨNH VIỄN hồ sơ '" + profileToDelete.name + "' khỏi hệ thống? Thao tác này không thể hoàn tác.")) { return; }
+
+        const statusText = document.getElementById('del-form-status');
+        statusText.innerText = "Đang xóa hồ sơ..."; statusText.style.display = 'block';
+
+        fetch(KETNOI.WEB_APP_URL, {
+            method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({ action: 'deleteProfile', name: profileToDelete.name, link: profileToDelete.url, credential: localStorage.getItem('ht_jwt_token') })
+        }).then(response => response.json()).then(result => {
+            statusText.style.display = 'none';
+            if (result.status === 'success') { alert("Đã xóa hồ sơ thành công!"); toggleXoaHoSoModal(false); loadDesktopData(localStorage.getItem('ht_jwt_token')); } else { alert("Lỗi: " + result.message); }
+        }).catch(err => { statusText.style.display = 'none'; alert("Lỗi mạng: " + err); });
     }
 
     function moDriveTaiKhoanKhac() { window.open('https://accounts.google.com/AccountChooser?continue=https://drive.google.com/drive/', '_blank'); document.getElementById('huong-dan-tk').style.display = 'block'; }
@@ -343,6 +415,7 @@
             const tr = document.createElement('tr'); let displayRoles = [];
             if (user.roles.includes('taohoso')) displayRoles.push('Tạo hồ sơ');
             if (user.roles.includes('ganhoso')) displayRoles.push('Gán hồ sơ');
+            if (user.roles.includes('xoahoso')) displayRoles.push('Xóa hồ sơ');
             if (user.roles.includes('xx')) displayRoles.push('<b style="color:#d32f2f">Quản trị viên</b>');
             tr.innerHTML = `<td>${user.name}</td><td>${user.email}</td><td>${displayRoles.join(' | ')}</td>
                 <td><span class="action-link" onclick="editUser('${user.name}', '${user.email}', '${user.roles}')">Sửa</span>
@@ -355,12 +428,13 @@
         document.getElementById('pq-name').value = name; document.getElementById('pq-email').value = email;
         document.getElementById('role-taohoso').checked = roles.includes('taohoso');
         document.getElementById('role-ganhoso').checked = roles.includes('ganhoso');
+        document.getElementById('role-xoahoso').checked = roles.includes('xoahoso');
         document.getElementById('role-xx').checked = roles.includes('xx');
     }
 
     function clearUserForm() {
         document.getElementById('pq-name').value = ''; document.getElementById('pq-email').value = '';
-        document.getElementById('role-taohoso').checked = false; document.getElementById('role-ganhoso').checked = false; document.getElementById('role-xx').checked = false;
+        document.getElementById('role-taohoso').checked = false; document.getElementById('role-ganhoso').checked = false; document.getElementById('role-xoahoso').checked = false; document.getElementById('role-xx').checked = false;
     }
 
     function saveUser() {
@@ -369,6 +443,7 @@
         let roles = [];
         if (document.getElementById('role-taohoso').checked) roles.push('taohoso');
         if (document.getElementById('role-ganhoso').checked) roles.push('ganhoso');
+        if (document.getElementById('role-xoahoso').checked) roles.push('xoahoso');
         if (document.getElementById('role-xx').checked) roles.push('xx');
         document.getElementById('pq-status').style.display = 'block';
         fetch(KETNOI.WEB_APP_URL, {
@@ -394,9 +469,10 @@
     }
 
     /* =========================================================================
-       3. KHỐI RENDER DESKTOP
+       3. KHỐI RENDER DESKTOP VÀ HIỆU ỨNG
        ========================================================================= */
     function renderIconsFromData(data) {
+        globalProfiles = data; // Lưu lại để dùng cho Form Xóa
         desktopArea.innerHTML = ''; 
         data.forEach((item, index) => {
             let gender = item.gender; let iconContent = '<span class="material-icons">folder</span>'; let bgClass = 'bg-' + ((index % 10) + 1);
