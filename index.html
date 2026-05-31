@@ -2,16 +2,13 @@
 <html lang="vi">
 <head>
     <script src="ketnoi.js"></script>
-    
     <link id="sys-favicon" rel="icon" href="">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title id="sys-title">Cổng thông tin Quản trị</title>
-  
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <script src="https://apis.google.com/js/api.js"></script> 
     <script src="https://accounts.google.com/gsi/client" async defer></script>
-    
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             document.getElementById('sys-title').innerText = KETNOI.TIEU_DE_TRANG;
@@ -19,7 +16,6 @@
             document.getElementById('sys-logo').src = KETNOI.LINK_LOGO;
             document.getElementById('sys-name').innerText = KETNOI.TEN_DINH_DANH;
         });
-
         (function() {
             var savedBgUrl = localStorage.getItem("ht_dashboard_bg");
             if (savedBgUrl && savedBgUrl.trim() !== "") {
@@ -27,53 +23,40 @@
             }
         })();
     </script>
-
     <style>
         :root { --default-bg: url('https://i.ibb.co/hJy3vH7y/hinh-nen-win-11-50-1.jpg'); }
         * { box-sizing: border-box; user-select: none; }
         html, body { height: 100vh; width: 100vw; margin: 0; padding: 0; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: #2c3e50; background-image: var(--default-bg); background-size: cover; background-position: center; background-attachment: fixed; background-repeat: no-repeat; display: flex; flex-direction: column; }
-
         #desktop-area { flex: 1; padding: 10px; display: flex; flex-direction: column; flex-wrap: wrap; align-content: flex-start; gap: 15px 5px; overflow: hidden; position: relative; }
         .desktop-icon { width: 90px; min-height: 105px; display: flex; flex-direction: column; align-items: center; padding: 6px; border: 1px solid transparent; border-radius: 4px; cursor: pointer; transition: background 0.1s; touch-action: none; }
         .desktop-icon:hover { background-color: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.3); }
         .desktop-icon:active { background-color: rgba(255, 255, 255, 0.25); }
         .icon-box { width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); pointer-events: none; }
         .icon-box .material-icons { font-size: 28px; color: #ffffff; }
-
         .bg-1 { background: linear-gradient(135deg, #1976D2, #42A5F5); } .bg-2 { background: linear-gradient(135deg, #F57F17, #FBC02D); } .bg-3 { background: linear-gradient(135deg, #388E3C, #66BB6A); } .bg-4 { background: linear-gradient(135deg, #00796B, #26A69A); } .bg-5 { background: linear-gradient(135deg, #7B1FA2, #AB47BC); } .bg-6 { background: linear-gradient(135deg, #5D4037, #8D6E63); } .bg-7 { background: linear-gradient(135deg, #D32F2F, #EF5350); } .bg-8 { background: linear-gradient(135deg, #E64A19, #FF7043); } .bg-9 { background: linear-gradient(135deg, #455A64, #78909C); } .bg-10 { background: linear-gradient(135deg, #0097A7, #26C6DA); }
-
         .icon-text { color: #ffffff; font-size: 12px; text-align: center; line-height: 1.3; text-shadow: 1px 1px 2px #000000, 0 0 10px rgba(0,0,0,0.8); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; word-wrap: break-word; pointer-events: none; }
-
         .taskbar { height: 48px; background: rgba(20, 20, 20, 0.75); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border-top: 1px solid rgba(255, 255, 255, 0.1); display: flex; justify-content: space-between; align-items: center; padding: 0 15px; z-index: 1000; }
-        
-        /* Cấu trúc nút Start/Login */
         .start-btn { display: flex; align-items: center; gap: 10px; padding: 4px 12px; border-radius: 6px; transition: background 0.2s; }
         .start-btn:hover { background: rgba(255, 255, 255, 0.15); }
         .start-logo { height: 28px; filter: drop-shadow(0 0 2px rgba(255,255,255,0.5)); }
         .start-text { color: #ffffff; font-weight: 600; font-size: 14px; letter-spacing: 0.5px; }
-
         .system-tray { display: flex; align-items: center; gap: 10px; color: #ffffff; }
         .btn-taskbar { display: flex; align-items: center; gap: 5px; padding: 6px 12px; font-size: 13px; font-weight: 600; color: #fff; border: none; border-radius: 5px; cursor: pointer; transition: background 0.2s; }
         .btn-taskbar.blue { background-color: #1976D2; } .btn-taskbar.blue:hover { background-color: #1565C0; }
         .btn-taskbar.green { background-color: #388E3C; } .btn-taskbar.green:hover { background-color: #2E7D32; }
         .btn-taskbar.purple { background-color: #8E24AA; } .btn-taskbar.purple:hover { background-color: #6A1B9A; }
         .btn-taskbar .material-icons { font-size: 16px; }
-
         .tray-icon { width: 36px; height: 36px; display: flex; justify-content: center; align-items: center; border-radius: 4px; cursor: pointer; transition: background 0.2s; }
         .tray-icon:hover { background: rgba(255, 255, 255, 0.15); }
         .tray-icon .material-icons { font-size: 20px; }
         .clock-container { text-align: right; font-size: 12px; line-height: 1.2; margin-left: 10px; padding: 0 5px; border-left: 1px solid rgba(255,255,255,0.2); padding-left: 15px;}
-
         .win-tooltip { position: fixed; background: rgba(255, 255, 255, 0.95); border: 1px solid #bbbbbb; padding: 6px 12px; border-radius: 4px; font-size: 13px; color: #333333; box-shadow: 2px 2px 8px rgba(0,0,0,0.25); pointer-events: none; opacity: 0; z-index: 9999; max-width: 250px; line-height: 1.4; transition: opacity 0.15s ease-in-out; }
-
         .window-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.4); display: none; justify-content: center; align-items: center; z-index: 2000; }
         .window-container { background: #ffffff; border-radius: 8px; box-shadow: 0 12px 40px rgba(0,0,0,0.4); display: flex; flex-direction: column; overflow: hidden; animation: popIn 0.2s ease-out; }
-        
         #window-utilities .window-container { width: 85vw; height: 85vh; }
         #window-gan-hoso .window-container { width: 440px; height: auto; }
         #window-phanquyen .window-container { width: 80vw; height: 80vh; max-width: 1000px;} 
-
         @keyframes popIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         .window-titlebar { background: #e0e0e0; padding: 8px 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #cccccc; }
         .window-title { font-size: 14px; font-weight: 600; color: #333; display: flex; align-items: center; gap: 5px; }
@@ -81,7 +64,6 @@
         .window-close { background: transparent; border: none; color: #333; font-weight: bold; font-size: 16px; cursor: pointer; width: 30px; height: 30px; border-radius: 4px; display: flex; align-items: center; justify-content: center; }
         .window-close:hover { background: #e81123; color: white; }
         .window-content { flex: 1; width: 100%; border: none; }
-
         .form-native { padding: 20px; user-select: text; }
         .form-native .form-group { margin-bottom: 15px; }
         .form-native label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 5px; color: #333; }
@@ -117,21 +99,11 @@
                 <span class="material-icons">manage_accounts</span> Cấp quyền
             </button>
 
-            <div class="tray-icon" onclick="resetPositions()" title="Khôi phục vị trí gốc của các biểu tượng">
-                <span class="material-icons">restore</span>
-            </div>
-            <div class="tray-icon" onclick="toggleUtilities(true)" title="Mở Tiện ích dạy học">
-                <span class="material-icons">build_circle</span>
-            </div>
-            <div class="tray-icon" onclick="changeBackgroundImage()" title="Cấu hình Hình nền Desktop">
-                <span class="material-icons">wallpaper</span>
-            </div>
-            <div class="tray-icon" onclick="dangXuat()" title="Đăng xuất khỏi hệ thống">
-                <span class="material-icons">logout</span>
-            </div>
-            <div class="clock-container" id="sys-clock">
-                --:--<br>--/--/----
-            </div>
+            <div class="tray-icon" onclick="resetPositions()" title="Khôi phục vị trí gốc của các biểu tượng"><span class="material-icons">restore</span></div>
+            <div class="tray-icon" onclick="toggleUtilities(true)" title="Mở Tiện ích dạy học"><span class="material-icons">build_circle</span></div>
+            <div class="tray-icon" onclick="changeBackgroundImage()" title="Cấu hình Hình nền Desktop"><span class="material-icons">wallpaper</span></div>
+            <div class="tray-icon" onclick="dangXuat()" title="Đăng xuất khỏi hệ thống an toàn"><span class="material-icons">logout</span></div>
+            <div class="clock-container" id="sys-clock">--:--<br>--/--/----</div>
         </div>
     </div>
 
@@ -140,9 +112,7 @@
     <div id="window-utilities" class="window-overlay">
         <div class="window-container">
             <div class="window-titlebar">
-                <div class="window-title">
-                    <span class="material-icons">build_circle</span> Tiện ích dạy học
-                </div>
+                <div class="window-title"><span class="material-icons">build_circle</span> Tiện ích dạy học</div>
                 <button class="window-close" onclick="toggleUtilities(false)">✕</button>
             </div>
             <iframe src="tienich.html" class="window-content"></iframe>
@@ -152,9 +122,7 @@
     <div id="window-gan-hoso" class="window-overlay">
         <div class="window-container">
             <div class="window-titlebar">
-                <div class="window-title">
-                    <span class="material-icons">attachment</span> Công cụ Gán Hồ sơ
-                </div>
+                <div class="window-title"><span class="material-icons">attachment</span> Công cụ Gán Hồ sơ</div>
                 <button class="window-close" onclick="toggleHoSoModal(false)">✕</button>
             </div>
             <div class="form-native">
@@ -162,29 +130,21 @@
                     <label>Họ và tên (Cột A): <span style="color: red;">*</span></label>
                     <input type="text" id="hs-hoten" placeholder="Nhập họ và tên cán bộ/giáo viên...">
                 </div>
-                
                 <div class="form-group">
                     <label>Tệp hồ sơ trên Drive (Cột B): <span style="color: red;">*</span></label>
                     <input type="text" id="hs-link" placeholder="Dán link thủ công hoặc chọn từ hệ thống..." style="margin-bottom: 8px;">
                     <div class="input-group">
-                        <button class="btn-picker" onclick="khoiTaoGooglePicker()" title="Dùng tài khoản đang đăng nhập">
-                            <span class="material-icons" style="font-size: 16px;">folder_shared</span> TK Mặc định
-                        </button>
-                        <button class="btn-picker" style="background: #546E7A;" onclick="moDriveTaiKhoanKhac()">
-                            <span class="material-icons" style="font-size: 16px;">switch_account</span> TK Khác
-                        </button>
+                        <button class="btn-picker" onclick="khoiTaoGooglePicker()" title="Dùng tài khoản đang đăng nhập"><span class="material-icons" style="font-size: 16px;">folder_shared</span> TK Mặc định</button>
+                        <button class="btn-picker" style="background: #546E7A;" onclick="moDriveTaiKhoanKhac()"><span class="material-icons" style="font-size: 16px;">switch_account</span> TK Khác</button>
                     </div>
                     <div id="huong-dan-tk" style="display:none; font-size: 12px; color: #c62828; margin-top: 8px; background: #ffebee; padding: 8px; border-radius: 4px; line-height: 1.4;">
                         <b>Hướng dẫn:</b> Hệ thống vừa mở trang Chọn Tài Khoản. Thầy hãy vào đúng tài khoản, copy đường link của thư mục hồ sơ và dán vào ô trống phía trên.
                     </div>
                 </div>
-
                 <div class="form-group">
                     <label>Giới tính (Cột C): <span style="color: red;">*</span></label>
                     <select id="hs-gioitinh">
-                        <option value="">-- Chọn giới tính --</option>
-                        <option value="x">Nam (x)</option>
-                        <option value="xx">Nữ (xx)</option>
+                        <option value="">-- Chọn giới tính --</option><option value="x">Nam (x)</option><option value="xx">Nữ (xx)</option>
                     </select>
                 </div>
                 <button class="btn-submit" onclick="xuLyLuuHoSo()">Lưu Dữ Liệu Hồ Sơ</button>
@@ -196,9 +156,7 @@
     <div id="window-phanquyen" class="window-overlay">
         <div class="window-container">
             <div class="window-titlebar">
-                <div class="window-title">
-                    <span class="material-icons">manage_accounts</span> Cấp quyền Hệ thống
-                </div>
+                <div class="window-title"><span class="material-icons">manage_accounts</span> Cấp quyền Hệ thống</div>
                 <button class="window-close" onclick="togglePhanQuyenModal(false)">✕</button>
             </div>
             <iframe id="iframe-phanquyen" src="" class="window-content" title="Phân quyền"></iframe>
@@ -206,113 +164,65 @@
     </div>
 
 <script>
-    let icons = [];
-    let isDragging = false;
-    const tooltip = document.getElementById('win-tooltip');
-    const desktopArea = document.getElementById('desktop-area');
+    let icons = []; let isDragging = false; const tooltip = document.getElementById('win-tooltip'); const desktopArea = document.getElementById('desktop-area');
+    let tokenClient; let pickerAccessToken = null;
 
-    // Khởi tạo các luồng xác thực Client-side (Tuân thủ chính sách bảo mật Google)
-    let tokenClient;
-    let pickerAccessToken = null;
-
-    /* =========================================================================
-       0. KHỐI XÁC THỰC GOOGLE VÀ NẠP DỮ LIỆU CHÍNH DANH
-       ========================================================================= */
-
-    function giaiMaJwt(token) {
-        var base64Url = token.split('.')[1];
-        var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        var jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-        }).join(''));
-        return JSON.parse(jsonPayload);
-    }
-
-    // Sự kiện khởi chạy phần mềm: Kiểm tra đăng nhập tức thì
+    /* THUẬT TOÁN ĐĂNG NHẬP VÀ XÁC THỰC BẢO MẬT JWT */
     window.onload = function() {
-        // 1. Nạp Identity Services (Dành cho việc đăng nhập)
         google.accounts.id.initialize({
             client_id: KETNOI.CLIENT_ID,
             callback: xuLyDangNhapThanhCong
         });
-
-        // 2. Nạp OAuth2 Services (Dành cho Picker truy cập Drive nội bộ an toàn)
         tokenClient = google.accounts.oauth2.initTokenClient({
             client_id: KETNOI.CLIENT_ID,
             scope: 'https://www.googleapis.com/auth/drive.readonly',
-            callback: (tokenResponse) => {
-                pickerAccessToken = tokenResponse.access_token;
-                hienThiGooglePicker(pickerAccessToken);
-            }
+            callback: (tokenResponse) => { pickerAccessToken = tokenResponse.access_token; hienThiGooglePicker(pickerAccessToken); }
         });
-
         kiemTraTrangThaiDangNhap();
     };
 
     function kiemTraTrangThaiDangNhap() {
-        let userEmail = localStorage.getItem('ht_user_email');
-        if (!userEmail) {
-            // Khóa Desktop, thay tên hệ thống bằng Nút Đăng Nhập
-            document.getElementById('sys-name').style.display = 'none';
-            document.querySelector('.system-tray').style.display = 'none';
+        let jwtToken = localStorage.getItem('ht_jwt_token');
+        if (!jwtToken) {
+            document.getElementById('sys-name').style.display = 'none'; document.querySelector('.system-tray').style.display = 'none';
             document.getElementById('btn-google-login').style.display = 'block';
-            
-            google.accounts.id.renderButton(
-                document.getElementById("btn-google-login"),
-                { theme: "outline", size: "medium", type: "standard", text: "signin" }
-            );
+            google.accounts.id.renderButton(document.getElementById("btn-google-login"), { theme: "outline", size: "medium", type: "standard", text: "signin" });
         } else {
-            // Mở Desktop, hiện Email
-            document.getElementById('btn-google-login').style.display = 'none';
-            document.getElementById('sys-name').style.display = 'block';
-            document.getElementById('sys-name').innerText = userEmail;
+            document.getElementById('btn-google-login').style.display = 'none'; document.getElementById('sys-name').style.display = 'block';
             document.querySelector('.system-tray').style.display = 'flex';
-            
-            loadDesktopData(userEmail);
+            loadDesktopData(jwtToken);
         }
     }
 
     function xuLyDangNhapThanhCong(response) {
-        const payload = giaiMaJwt(response.credential);
-        const email = payload.email.toLowerCase();
-        localStorage.setItem('ht_user_email', email);
+        localStorage.setItem('ht_jwt_token', response.credential); // Lưu toàn bộ chữ ký mã hóa
         kiemTraTrangThaiDangNhap();
     }
 
     function dangXuat() {
         if(confirm("Thầy/Cô có chắc chắn muốn đăng xuất tài khoản an toàn khỏi hệ thống?")) {
-            localStorage.removeItem('ht_user_email');
-            pickerAccessToken = null; // Reset mã thông báo Drive
-            location.reload();
+            localStorage.removeItem('ht_jwt_token'); pickerAccessToken = null; location.reload();
         }
     }
 
-    // Tải dữ liệu kèm quét email xác thực
-    function loadDesktopData(emailParam) {
+    function loadDesktopData(jwtToken) {
         fetch(KETNOI.WEB_APP_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-            body: JSON.stringify({ action: 'initApp', email: emailParam }) 
-        })
-        .then(response => response.json())
-        .then(result => {
+            method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({ action: 'initApp', credential: jwtToken }) // Gửi Token đi kiểm định
+        }).then(response => response.json()).then(result => {
             if (result.status === 'success') { 
-                renderIconsFromData(result.data); 
-                apDungPhanQuyen(result.roles || ""); 
-            } 
-        })
-        .catch(error => console.error("Lỗi kết nối:", error));
+                document.getElementById('sys-name').innerText = result.verifiedEmail; // Lấy email đã được Google chứng thực
+                renderIconsFromData(result.data); apDungPhanQuyen(result.roles || ""); 
+            } else {
+                alert(result.message); dangXuat(); // Token hỏng -> Ép văng ra ngoài
+            }
+        }).catch(error => console.error("Lỗi:", error));
     }
 
     function apDungPhanQuyen(roles) {
-        const btnCreate = document.getElementById('btn-create-profile');
-        const btnAssign = document.getElementById('btn-assign-profile');
-        const btnAuth   = document.getElementById('btn-auth-profile');
-
+        const btnCreate = document.getElementById('btn-create-profile'); const btnAssign = document.getElementById('btn-assign-profile'); const btnAuth = document.getElementById('btn-auth-profile');
         btnCreate.style.display = 'none'; btnAssign.style.display = 'none'; btnAuth.style.display = 'none';
-
-        if (roles.includes('xx')) {
-            btnCreate.style.display = 'flex'; btnAssign.style.display = 'flex'; btnAuth.style.display = 'flex';
+        if (roles.includes('xx')) { btnCreate.style.display = 'flex'; btnAssign.style.display = 'flex'; btnAuth.style.display = 'flex';
         } else {
             if (roles.includes('taohoso')) btnCreate.style.display = 'flex';
             if (roles.includes('ganhoso')) btnAssign.style.display = 'flex';
@@ -320,16 +230,10 @@
     }
 
     window.addEventListener('message', function(event) {
-        if (event.data === 'reload_desktop') {
-            toggleHoSoModal(false);
-            loadDesktopData(localStorage.getItem('ht_user_email')); 
-        }
+        if (event.data === 'reload_desktop') { toggleHoSoModal(false); loadDesktopData(localStorage.getItem('ht_jwt_token')); }
     });
 
-    /* =========================================================================
-       1. KHỐI QUẢN LÝ GIAO DIỆN (UI) VÀ PICKER (OAUTH 2.0)
-       ========================================================================= */
-
+    /* GIAO DIỆN VÀ GÁN HỒ SƠ */
     function toggleHoSoModal(isShow) {
         document.getElementById('window-gan-hoso').style.display = isShow ? 'flex' : 'none';
         if(!isShow) {
@@ -340,12 +244,8 @@
     }
 
     function togglePhanQuyenModal(isShow) {
-        var win = document.getElementById('window-phanquyen');
-        var iframe = document.getElementById('iframe-phanquyen');
-        if (isShow) {
-            if (iframe.getAttribute('src') === "" || iframe.getAttribute('src') === null) { iframe.src = "PhanQuyen.html"; }
-            win.style.display = 'flex';
-        } else { win.style.display = 'none'; }
+        var win = document.getElementById('window-phanquyen'); var iframe = document.getElementById('iframe-phanquyen');
+        if (isShow) { if (!iframe.src) iframe.src = "PhanQuyen.html"; win.style.display = 'flex'; } else { win.style.display = 'none'; }
     }
 
     function moDriveTaiKhoanKhac() {
@@ -354,71 +254,42 @@
     }
 
     function khoiTaoGooglePicker() {
-        const statusText = document.getElementById('form-status');
-        statusText.innerText = "Đang kết nối không gian Drive an toàn..."; statusText.style.display = 'block';
-        
-        // Cấp phép bằng Token Client của chính người dùng hiện tại
-        if (pickerAccessToken === null) {
-            // Hiển thị hộp thoại Consent của Google lần đầu
-            tokenClient.requestAccessToken({prompt: 'consent'});
-        } else {
-            // Mở trực tiếp nếu đã có token trong phiên
-            hienThiGooglePicker(pickerAccessToken);
-        }
+        document.getElementById('form-status').innerText = "Đang kết nối không gian Drive an toàn..."; document.getElementById('form-status').style.display = 'block';
+        if (pickerAccessToken === null) { tokenClient.requestAccessToken({prompt: 'consent'}); } else { hienThiGooglePicker(pickerAccessToken); }
     }
 
     function hienThiGooglePicker(token) {
-        document.getElementById('form-status').style.display = 'none';
-        document.getElementById('window-gan-hoso').style.display = 'none'; // Ẩn UI để nhường chỗ
-        
+        document.getElementById('form-status').style.display = 'none'; document.getElementById('window-gan-hoso').style.display = 'none';
         gapi.load('picker', function() {
-            var folderView = new google.picker.DocsView(google.picker.ViewId.FOLDERS)
-                .setIncludeFolders(true).setSelectFolderEnabled(true);
-            
+            var folderView = new google.picker.DocsView(google.picker.ViewId.FOLDERS).setIncludeFolders(true).setSelectFolderEnabled(true);
             var picker = new google.picker.PickerBuilder()
-                .enableFeature(google.picker.Feature.SUPPORT_DRIVES)
-                .addView(folderView)
-                .addView(google.picker.ViewId.DOCS)
-                .setOAuthToken(token)
+                .enableFeature(google.picker.Feature.SUPPORT_DRIVES).addView(folderView).addView(google.picker.ViewId.DOCS).setOAuthToken(token)
                 .setCallback(function(data) {
-                    if (data.action == google.picker.Action.PICKED) {
-                        var elLink = document.getElementById('hs-link'); 
-                        elLink.value = data.docs[0].url; 
-                        elLink.style.borderColor = '#ccc'; 
-                        document.getElementById('window-gan-hoso').style.display = 'flex';
-                    } else if (data.action == google.picker.Action.CANCEL) { 
-                        document.getElementById('window-gan-hoso').style.display = 'flex'; 
-                    }
-                }).build(); 
-            picker.setVisible(true);
+                    if (data.action == google.picker.Action.PICKED) { document.getElementById('hs-link').value = data.docs[0].url; document.getElementById('hs-link').style.borderColor = '#ccc'; document.getElementById('window-gan-hoso').style.display = 'flex';
+                    } else if (data.action == google.picker.Action.CANCEL) { document.getElementById('window-gan-hoso').style.display = 'flex'; }
+                }).build(); picker.setVisible(true);
         });
     }
 
     function xuLyLuuHoSo() {
         var elHoTen = document.getElementById('hs-hoten'); var elLink = document.getElementById('hs-link'); var elGioiTinh = document.getElementById('hs-gioitinh');
         var hoTen = elHoTen.value.trim(); var link = elLink.value.trim(); var gioiTinh = elGioiTinh.value;
-
         elHoTen.style.borderColor = '#ccc'; elLink.style.borderColor = '#ccc'; elGioiTinh.style.borderColor = '#ccc';
         var hasError = false;
-        if (!hoTen) { elHoTen.style.borderColor = 'red'; hasError = true; }
-        if (!link) { elLink.style.borderColor = 'red'; hasError = true; }
-        if (!gioiTinh) { elGioiTinh.style.borderColor = 'red'; hasError = true; }
+        if (!hoTen) { elHoTen.style.borderColor = 'red'; hasError = true; } if (!link) { elLink.style.borderColor = 'red'; hasError = true; } if (!gioiTinh) { elGioiTinh.style.borderColor = 'red'; hasError = true; }
         if (hasError) { alert("Yêu cầu bắt buộc: Vui lòng điền đầy đủ thông tin!"); return; }
 
-        const statusText = document.getElementById('form-status'); statusText.innerText = "Đang lưu dữ liệu..."; statusText.style.display = 'block';
+        document.getElementById('form-status').innerText = "Đang lưu dữ liệu..."; document.getElementById('form-status').style.display = 'block';
         fetch(KETNOI.WEB_APP_URL, {
             method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-            body: JSON.stringify({ action: 'saveProfile', hoTen: hoTen, link: link, gioiTinh: gioiTinh })
+            body: JSON.stringify({ action: 'saveProfile', hoTen: hoTen, link: link, gioiTinh: gioiTinh, credential: localStorage.getItem('ht_jwt_token') })
         }).then(response => response.json()).then(result => {
-            statusText.style.display = 'none';
-            if (result.status === 'success') { alert("Gán hồ sơ thành công!"); toggleHoSoModal(false); loadDesktopData(localStorage.getItem('ht_user_email')); } else { alert("Lỗi ghi dữ liệu: " + result.message); }
+            document.getElementById('form-status').style.display = 'none';
+            if (result.status === 'success') { alert("Gán hồ sơ thành công!"); toggleHoSoModal(false); loadDesktopData(localStorage.getItem('ht_jwt_token')); } else { alert("Lỗi hệ thống: " + result.message); }
         });
     }
 
-    /* =========================================================================
-       2. KHỐI RENDER VÀ ĐỒNG HỒ
-       ========================================================================= */
-
+    /* RENDER & EVENT LISTENER ĐƯỢC GIỮ NGUYÊN HOẠT ĐỘNG */
     function renderIconsFromData(data) {
         desktopArea.innerHTML = ''; 
         data.forEach((item, index) => {
@@ -430,49 +301,15 @@
         });
         icons = document.querySelectorAll('.desktop-icon'); setupTooltipEvents(); initializeLayout(); setupDragEvents();
     }
-
     function navigateTo(url, isNewTab) { if (isDragging) { isDragging = false; return; } if (isNewTab) { window.open(url, '_blank'); } else { window.location.href = url; } }
-
-    function setupTooltipEvents() {
-        icons.forEach(icon => {
-            icon.addEventListener('mouseenter', function(e) { if (isDragging) return; tooltip.innerText = this.getAttribute('data-desc'); tooltip.style.opacity = '1'; });
-            icon.addEventListener('mousemove', function(e) { tooltip.style.left = (e.clientX + 15) + 'px'; tooltip.style.top = (e.clientY + 15) + 'px'; });
-            icon.addEventListener('mouseleave', function() { tooltip.style.opacity = '0'; });
-        });
-    }
-
-    function updateClock() {
-        const now = new Date(); document.getElementById('sys-clock').innerHTML = `${now.toLocaleTimeString('vi-VN', {hour: '2-digit', minute:'2-digit'})}<br>${now.toLocaleDateString('vi-VN', {day: '2-digit', month: '2-digit', year: 'numeric'})}`;
-    } setInterval(updateClock, 1000); updateClock();
-
-    function initializeLayout() {
-        const savedPositions = JSON.parse(localStorage.getItem('ht_desktop_positions_v3')) || {};
-        icons.forEach(icon => { const id = icon.getAttribute('data-id'); if (savedPositions[id]) { icon.style.position = 'absolute'; icon.style.left = savedPositions[id].left; icon.style.top = savedPositions[id].top; icon.style.margin = '0'; } });
-        setTimeout(() => { icons.forEach(icon => { if (icon.style.position !== 'absolute') { const rect = icon.getBoundingClientRect(); const areaRect = desktopArea.getBoundingClientRect(); icon.style.left = (rect.left - areaRect.left) + 'px'; icon.style.top = (rect.top - areaRect.top) + 'px'; } }); icons.forEach(icon => { icon.style.position = 'absolute'; icon.style.margin = '0'; }); }, 50);
-    }
-
+    function setupTooltipEvents() { icons.forEach(icon => { icon.addEventListener('mouseenter', function(e) { if (isDragging) return; tooltip.innerText = this.getAttribute('data-desc'); tooltip.style.opacity = '1'; }); icon.addEventListener('mousemove', function(e) { tooltip.style.left = (e.clientX + 15) + 'px'; tooltip.style.top = (e.clientY + 15) + 'px'; }); icon.addEventListener('mouseleave', function() { tooltip.style.opacity = '0'; }); }); }
+    function updateClock() { const now = new Date(); document.getElementById('sys-clock').innerHTML = `${now.toLocaleTimeString('vi-VN', {hour: '2-digit', minute:'2-digit'})}<br>${now.toLocaleDateString('vi-VN', {day: '2-digit', month: '2-digit', year: 'numeric'})}`; } setInterval(updateClock, 1000); updateClock();
+    function initializeLayout() { const savedPositions = JSON.parse(localStorage.getItem('ht_desktop_positions_v3')) || {}; icons.forEach(icon => { const id = icon.getAttribute('data-id'); if (savedPositions[id]) { icon.style.position = 'absolute'; icon.style.left = savedPositions[id].left; icon.style.top = savedPositions[id].top; icon.style.margin = '0'; } }); setTimeout(() => { icons.forEach(icon => { if (icon.style.position !== 'absolute') { const rect = icon.getBoundingClientRect(); const areaRect = desktopArea.getBoundingClientRect(); icon.style.left = (rect.left - areaRect.left) + 'px'; icon.style.top = (rect.top - areaRect.top) + 'px'; } }); icons.forEach(icon => { icon.style.position = 'absolute'; icon.style.margin = '0'; }); }, 50); }
     let draggedIcon = null, offsetX = 0, offsetY = 0, dragThresholdPassed = false, startX, startY;
     function setupDragEvents() { icons.forEach(icon => { icon.addEventListener('mousedown', startDrag); icon.addEventListener('touchstart', startDrag, {passive: false}); }); }
-
-    function startDrag(e) {
-        if (e.target.closest('.icon-box') === null && e.target.closest('.icon-text') === null && e.target !== this) return; dragThresholdPassed = false; draggedIcon = this;
-        const clientX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX; const clientY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY; startX = clientX; startY = clientY;
-        const rect = draggedIcon.getBoundingClientRect(); offsetX = clientX - rect.left; offsetY = clientY - rect.top; tooltip.style.opacity = '0'; 
-        document.addEventListener('mousemove', drag); document.addEventListener('touchmove', drag, {passive: false}); document.addEventListener('mouseup', stopDrag); document.addEventListener('touchend', stopDrag);
-    }
-
-    function drag(e) {
-        if (!draggedIcon) return;
-        const clientX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX; const clientY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY;
-        if (Math.abs(clientX - startX) > 3 || Math.abs(clientY - startY) > 3) { dragThresholdPassed = true; isDragging = true; draggedIcon.style.zIndex = '9999'; draggedIcon.style.opacity = '0.7'; e.preventDefault(); }
-        if (dragThresholdPassed) { const areaRect = desktopArea.getBoundingClientRect(); let newLeft = Math.max(0, Math.min(clientX - areaRect.left - offsetX, areaRect.width - draggedIcon.offsetWidth)); let newTop = Math.max(0, Math.min(clientY - areaRect.top - offsetY, areaRect.height - draggedIcon.offsetHeight)); draggedIcon.style.left = newLeft + 'px'; draggedIcon.style.top = newTop + 'px'; }
-    }
-
-    function stopDrag(e) {
-        if (!draggedIcon) return; draggedIcon.style.zIndex = ''; draggedIcon.style.opacity = '1'; if (dragThresholdPassed) { savePositions(); }
-        document.removeEventListener('mousemove', drag); document.removeEventListener('touchmove', drag); document.removeEventListener('mouseup', stopDrag); document.removeEventListener('touchend', stopDrag); draggedIcon = null; setTimeout(() => { isDragging = false; }, 50);
-    }
-
+    function startDrag(e) { if (e.target.closest('.icon-box') === null && e.target.closest('.icon-text') === null && e.target !== this) return; dragThresholdPassed = false; draggedIcon = this; const clientX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX; const clientY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY; startX = clientX; startY = clientY; const rect = draggedIcon.getBoundingClientRect(); offsetX = clientX - rect.left; offsetY = clientY - rect.top; tooltip.style.opacity = '0'; document.addEventListener('mousemove', drag); document.addEventListener('touchmove', drag, {passive: false}); document.addEventListener('mouseup', stopDrag); document.addEventListener('touchend', stopDrag); }
+    function drag(e) { if (!draggedIcon) return; const clientX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX; const clientY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY; if (Math.abs(clientX - startX) > 3 || Math.abs(clientY - startY) > 3) { dragThresholdPassed = true; isDragging = true; draggedIcon.style.zIndex = '9999'; draggedIcon.style.opacity = '0.7'; e.preventDefault(); } if (dragThresholdPassed) { const areaRect = desktopArea.getBoundingClientRect(); let newLeft = Math.max(0, Math.min(clientX - areaRect.left - offsetX, areaRect.width - draggedIcon.offsetWidth)); let newTop = Math.max(0, Math.min(clientY - areaRect.top - offsetY, areaRect.height - draggedIcon.offsetHeight)); draggedIcon.style.left = newLeft + 'px'; draggedIcon.style.top = newTop + 'px'; } }
+    function stopDrag(e) { if (!draggedIcon) return; draggedIcon.style.zIndex = ''; draggedIcon.style.opacity = '1'; if (dragThresholdPassed) { savePositions(); } document.removeEventListener('mousemove', drag); document.removeEventListener('touchmove', drag); document.removeEventListener('mouseup', stopDrag); document.removeEventListener('touchend', stopDrag); draggedIcon = null; setTimeout(() => { isDragging = false; }, 50); }
     function savePositions() { const positions = {}; icons.forEach(icon => { positions[icon.getAttribute('data-id')] = { left: icon.style.left, top: icon.style.top }; }); localStorage.setItem('ht_desktop_positions_v3', JSON.stringify(positions)); }
     function resetPositions() { localStorage.removeItem('ht_desktop_positions_v3'); icons.forEach(icon => { icon.style.position = ''; icon.style.left = ''; icon.style.top = ''; icon.style.margin = ''; }); initializeLayout(); }
     function changeBackgroundImage() { var currentUrl = localStorage.getItem("ht_dashboard_bg") || ""; var newUrl = prompt("CẤU HÌNH HÌNH NỀN DESKTOP\n\nNhập đường dẫn (URL) hình ảnh:\n(Để trống nếu muốn quay về hình nền mặc định)", currentUrl); if (newUrl !== null) { if (newUrl.trim() === "") { localStorage.removeItem("ht_dashboard_bg"); document.documentElement.style.setProperty('--default-bg', "url('https://i.ibb.co/4gCSYHV6/congthongtin1.jpg')"); } else { localStorage.setItem("ht_dashboard_bg", newUrl.trim()); document.documentElement.style.setProperty('--default-bg', "url('" + newUrl.trim() + "')"); } } }
