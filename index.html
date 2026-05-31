@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <link rel="icon" href="https://i.ibb.co/6R8Y9DNq/logo-l-a-ch-n6.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cổng thông tin Quản trị - Trường TH&THCS Hợp Thành</title>
+  
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
+    <script>
+        /* =========================================================================
+           THIẾT LẬP HÌNH NỀN TỨC THÌ (PRE-RENDER)
+           Đoạn mã này chạy ngay lập tức khi đọc tệp HTML, ngăn chặn hiện tượng chớp trắng.
+           ========================================================================= */
+        (function() {
+            var savedBgUrl = localStorage.getItem("ht_dashboard_bg");
+            if (savedBgUrl && savedBgUrl.trim() !== "") {
+                document.documentElement.style.setProperty('--default-bg', "url('" + savedBgUrl + "')");
+            }
+        })();
+    </script>
+
+    <style>
+        /* =========================================================================
+           1. KHỐI NỀN TẢNG (HỆ ĐIỀU HÀNH WINDOWS UI) 
+           ========================================================================= */
+        :root {
+            /* Hình nền gốc mặc định */
+            --default-bg: url('https://i.ibb.co/hJy3vH7y/hinh-nen-win-11-50-1.jpg');
+        }
+
+        * {
+            box-sizing: border-box;
+            user-select: none; 
+        }
+
+        html, body { 
+            height: 100vh;
+            width: 100vw;
+            margin: 0; 
+            padding: 0;
+            overflow: hidden; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            /* Màu nền tối làm lót dự phòng khi ảnh gốc đang tải qua mạng */
+            background-color: #2c3e50; 
+            background-image: var(--default-bg);
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* =========================================================================
+           2. KHỐI MÀN HÌNH CHÍNH (DESKTOP GRID)
+           ========================================================================= */
+        #desktop-area {
+            flex: 1;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            flex-wrap: wrap;
+            align-content: flex-start;
+            gap: 15px 5px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Từng Icon trên Desktop */
+        .desktop-icon {
+            width: 90px;
+            min-height: 105px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 6px;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.1s;
+            touch-action: none; 
+        }
+
+        .desktop-icon:hover {
+            background-color: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .desktop-icon:active {
+            background-color: rgba(255, 255, 255, 0.25);
+        }
+
+        /* Khối màu chứa Icon */
+        .icon-box {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 6px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            pointer-events: none; 
+        }
+
+        .icon-box .material-icons {
+            font-size: 28px;
+            color: #ffffff;
+        }
+
+        /* Bảng màu rực rỡ cho các ứng dụng */
+        .bg-1 { background: linear-gradient(135deg, #1976D2, #42A5F5); }
+        .bg-2 { background: linear-gradient(135deg, #F57F17, #FBC02D); }
+        .bg-3 { background: linear-gradient(135deg, #388E3C, #66BB6A); }
+        .bg-4 { background: linear-gradient(135deg, #00796B, #26A69A); }
+        .bg-5 { background: linear-gradient(135deg, #7B1FA2, #AB47BC); }
+        .bg-6 { background: linear-gradient(135deg, #5D4037, #8D6E63); }
+        .bg-7 { background: linear-gradient(135deg, #D32F2F, #EF5350); }
+        .bg-8 { background: linear-gradient(135deg, #E64A19, #FF7043); }
+        .bg-9 { background: linear-gradient(135deg, #455A64, #78909C); }
+        .bg-10 { background: linear-gradient(135deg, #0097A7, #26C6DA); }
+
+        /* Chữ của Icon */
+        .icon-text {
+            color: #ffffff;
+            font-size: 12px;
+            text-align: center;
+            line-height: 1.3;
+            text-shadow: 1px 1px 2px #000000, 0 0 10px rgba(0,0,0,0.8);
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            word-wrap: break-word;
+            pointer-events: none;
+        }
+
+        /* =========================================================================
+           3. THANH TÁC VỤ (TASKBAR) DƯỚI CÙNG
+           ========================================================================= */
+        .taskbar {
+            height: 48px;
+            background: rgba(20, 20, 20, 0.75);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 15px;
+            z-index: 1000;
+        }
+
+        .start-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .start-btn:hover { background: rgba(255, 255, 255, 0.15); }
+        
+        .start-logo {
+            height: 28px;
+            filter: drop-shadow(0 0 2px rgba(255,255,255,0.5));
+        }
+
+        .start-text {
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 14px;
+            letter-spacing: 0.5px;
+        }
+
+        .system-tray {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #ffffff;
+        }
+
+        .tray-icon {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .tray-icon:hover { background: rgba(255, 255, 255, 0.15); }
+        .tray-icon .material-icons { font-size: 20px; }
+
+        .clock-container {
+            text-align: right;
+            font-size: 12px;
+            line-height: 1.2;
+            margin-left: 10px;
+            padding: 0 5px;
+        }
+
+        /* =========================================================================
+           4. HỘP THOẠI GHI CHÚ BÁM CHUỘT (TOOLTIP) 
+           ========================================================================= */
+        .win-tooltip {
+            position: fixed;
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid #bbbbbb;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #333333;
+            box-shadow: 2px 2px 8px rgba(0,0,0,0.25);
+            pointer-events: none;
+            opacity: 0;
+            z-index: 9999;
+            max-width: 250px;
+            line-height: 1.4;
+            transition: opacity 0.15s ease-in-out;
+        }
+
+        /* =========================================================================
+           5. CỬA SỔ TIỆN ÍCH DẠY HỌC (WINDOW UI)
+           ========================================================================= */
+        .window-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.3);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .window-container {
+            width: 85vw;
+            height: 85vh;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            animation: popIn 0.2s ease-out;
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0.95); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .window-titlebar {
+            background: #e0e0e0;
+            padding: 8px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #cccccc;
+        }
+
+        .window-title { font-size: 14px; font-weight: 600; color: #333; display: flex; align-items: center; gap: 5px; }
+        .window-title .material-icons { font-size: 16px; color: #555; }
+
+        .window-close {
+            background: transparent;
+            border: none;
+            color: #333;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            width: 30px; height: 30px;
+            border-radius: 4px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .window-close:hover { background: #e81123; color: white; }
+
+        .window-content {
+            flex: 1;
+            width: 100%;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="desktop-area">
+        <!-- Khu vực này sẽ được thuật toán tải Icon tự động điền vào -->
+    </div>
+
+    <div class="taskbar">
+        <div class="start-btn" title="Hệ thống Quản trị Điều hành">
+            <img src="https://i.ibb.co/6R8Y9DNq/logo-l-a-ch-n6.png" alt="Logo" class="start-logo">
+            <span class="start-text">Hợp Thành OS</span>
+        </div>
+        
+        <div class="system-tray">
+            <div class="tray-icon" onclick="resetPositions()" title="Khôi phục vị trí gốc của các biểu tượng">
+                <span class="material-icons">restore</span>
+            </div>
+            <div class="tray-icon" onclick="toggleUtilities(true)" title="Mở Tiện ích dạy học">
+                <span class="material-icons">build_circle</span>
+            </div>
+            <div class="tray-icon" onclick="changeBackgroundImage()" title="Cấu hình Hình nền Desktop">
+                <span class="material-icons">wallpaper</span>
+            </div>
+            <div class="clock-container" id="sys-clock">
+                --:--<br>--/--/----
+            </div>
+        </div>
+    </div>
+
+    <div id="win-tooltip" class="win-tooltip"></div>
+
+    <div id="window-utilities" class="window-overlay">
+        <div class="window-container">
+            <div class="window-titlebar">
+                <div class="window-title">
+                    <span class="material-icons">build_circle</span> Tiện ích dạy học
+                </div>
+                <button class="window-close" onclick="toggleUtilities(false)" title="Đóng cửa sổ">✕</button>
+            </div>
+            <iframe src="tienich.html" class="window-content" title="Tiện ích"></iframe>
+        </div>
+    </div>
+
+<script>
+    /* =========================================================================
+       0. KHỐI NẠP DỮ LIỆU ĐỘNG TỪ GOOGLE SHEET (API FETCH)
+       ========================================================================= */
+    const WEB_APP_URL = "DÁN_URL_WEB_APP_CỦA_THẦY_VÀO_ĐÂY"; 
+    
+    // Biến toàn cục để quản lý Icon
+    let icons = [];
+    let isDragging = false;
+    const tooltip = document.getElementById('win-tooltip');
+    const desktopArea = document.getElementById('desktop-area');
+
+    // Chạy ngay khi tải DOM xong
+    window.addEventListener("DOMContentLoaded", function() {
+        fetch(WEB_APP_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'text/plain;charset=utf-8',
+            }
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.status === 'success') {
+                renderIconsFromData(result.data);
+            } else {
+                console.error("Lỗi từ máy chủ:", result.message);
+            }
+        })
+        .catch(error => {
+            console.error("Không thể kết nối đến hệ thống máy chủ:", error);
+        });
+    });
+
+    function renderIconsFromData(data) {
+        desktopArea.innerHTML = ''; // Làm sạch khu vực
+        
+        data.forEach((item, index) => {
+            const bgClass = 'bg-' + ((index % 10) + 1);
+            
+            const div = document.createElement('div');
+            div.className = 'desktop-icon';
+            div.setAttribute('data-id', index + 1);
+            div.setAttribute('data-desc', 'Nhấn để mở liên kết thư mục');
+            
+            div.innerHTML = `
+                <div class="icon-box ${bgClass}"><span class="material-icons">folder</span></div>
+                <span class="icon-text">${item.name}</span>
+            `;
+            
+            div.onclick = function() { navigateTo(item.url, true); };
+            desktopArea.appendChild(div);
+        });
+        
+        // Khởi tạo lại các biến truy xuất mảng sau khi tạo DOM
+        icons = document.querySelectorAll('.desktop-icon');
+        
+        // Kích hoạt sự kiện Tooltip cho các Icon mới
+        setupTooltipEvents();
+        
+        // Kích hoạt thuật toán Đóng băng và Kéo thả sau khi vẽ xong giao diện
+        initializeLayout();
+        setupDragEvents();
+    }
+
+    /* =========================================================================
+       1. KHỐI XỬ LÝ ĐIỀU HƯỚNG VÀ TOOLTIP
+       ========================================================================= */
+    function navigateTo(url, isNewTab) {
+        if (isDragging) {
+            isDragging = false;
+            return; 
+        }
+        if (isNewTab) { window.open(url, '_blank'); } 
+        else { window.location.href = url; }
+    }
+
+    function setupTooltipEvents() {
+        icons.forEach(icon => {
+            icon.addEventListener('mouseenter', function(e) {
+                if (isDragging) return; 
+                tooltip.innerText = this.getAttribute('data-desc');
+                tooltip.style.opacity = '1';
+            });
+            icon.addEventListener('mousemove', function(e) {
+                tooltip.style.left = (e.clientX + 15) + 'px';
+                tooltip.style.top = (e.clientY + 15) + 'px';
+            });
+            icon.addEventListener('mouseleave', function() {
+                tooltip.style.opacity = '0';
+            });
+        });
+    }
+
+    /* =========================================================================
+       2. KHỐI ĐỒNG HỒ THỜI GIAN THỰC
+       ========================================================================= */
+    function updateClock() {
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString('vi-VN', {hour: '2-digit', minute:'2-digit'});
+        const dateStr = now.toLocaleDateString('vi-VN', {day: '2-digit', month: '2-digit', year: 'numeric'});
+        document.getElementById('sys-clock').innerHTML = `${timeStr}<br>${dateStr}`;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    /* =========================================================================
+       3. THUẬT TOÁN ĐÓNG BĂNG TỌA ĐỘ VÀ KÉO THẢ
+       ========================================================================= */
+    function initializeLayout() {
+        const savedPositions = JSON.parse(localStorage.getItem('ht_desktop_positions_v3')) || {};
+        
+        icons.forEach(icon => {
+            const id = icon.getAttribute('data-id');
+            if (savedPositions[id]) {
+                icon.style.position = 'absolute';
+                icon.style.left = savedPositions[id].left;
+                icon.style.top = savedPositions[id].top;
+                icon.style.margin = '0'; 
+            }
+        });
+
+        setTimeout(() => {
+            icons.forEach(icon => {
+                if (icon.style.position !== 'absolute') {
+                    const rect = icon.getBoundingClientRect();
+                    const areaRect = desktopArea.getBoundingClientRect();
+                    
+                    const absoluteLeft = (rect.left - areaRect.left) + 'px';
+                    const absoluteTop = (rect.top - areaRect.top) + 'px';
+                    
+                    icon.style.left = absoluteLeft;
+                    icon.style.top = absoluteTop;
+                }
+            });
+
+            icons.forEach(icon => {
+                icon.style.position = 'absolute';
+                icon.style.margin = '0';
+            });
+        }, 50);
+    }
+
+    let draggedIcon = null;
+    let offsetX = 0, offsetY = 0;
+    let dragThresholdPassed = false; 
+    let startX, startY;
+
+    function setupDragEvents() {
+        icons.forEach(icon => {
+            icon.addEventListener('mousedown', startDrag);
+            icon.addEventListener('touchstart', startDrag, {passive: false});
+        });
+    }
+
+    function startDrag(e) {
+        if (e.target.closest('.icon-box') === null && e.target.closest('.icon-text') === null && e.target !== this) return;
+        
+        dragThresholdPassed = false;
+        draggedIcon = this;
+        
+        const clientX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+        const clientY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY;
+        
+        startX = clientX;
+        startY = clientY;
+
+        const rect = draggedIcon.getBoundingClientRect();
+        offsetX = clientX - rect.left;
+        offsetY = clientY - rect.top;
+        
+        tooltip.style.opacity = '0'; 
+
+        document.addEventListener('mousemove', drag);
+        document.addEventListener('touchmove', drag, {passive: false});
+        document.addEventListener('mouseup', stopDrag);
+        document.addEventListener('touchend', stopDrag);
+    }
+
+    function drag(e) {
+        if (!draggedIcon) return;
+        
+        const clientX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+        const clientY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY;
+
+        if (Math.abs(clientX - startX) > 3 || Math.abs(clientY - startY) > 3) {
+            dragThresholdPassed = true;
+            isDragging = true;
+            draggedIcon.style.zIndex = '9999';
+            draggedIcon.style.opacity = '0.7';
+            e.preventDefault(); 
+        }
+
+        if (dragThresholdPassed) {
+            const areaRect = desktopArea.getBoundingClientRect();
+            
+            let newLeft = clientX - areaRect.left - offsetX;
+            let newTop = clientY - areaRect.top - offsetY;
+            
+            newLeft = Math.max(0, Math.min(newLeft, areaRect.width - draggedIcon.offsetWidth));
+            newTop = Math.max(0, Math.min(newTop, areaRect.height - draggedIcon.offsetHeight));
+            
+            draggedIcon.style.left = newLeft + 'px';
+            draggedIcon.style.top = newTop + 'px';
+        }
+    }
+
+    function stopDrag(e) {
+        if (!draggedIcon) return;
+        
+        draggedIcon.style.zIndex = '';
+        draggedIcon.style.opacity = '1';
+        
+        if (dragThresholdPassed) {
+            savePositions(); 
+        }
+        
+        document.removeEventListener('mousemove', drag);
+        document.removeEventListener('touchmove', drag);
+        document.removeEventListener('mouseup', stopDrag);
+        document.removeEventListener('touchend', stopDrag);
+        
+        draggedIcon = null;
+        
+        setTimeout(() => { isDragging = false; }, 50);
+    }
+
+    function savePositions() {
+        const positions = {};
+        icons.forEach(icon => {
+            positions[icon.getAttribute('data-id')] = {
+                left: icon.style.left,
+                top: icon.style.top
+            };
+        });
+        localStorage.setItem('ht_desktop_positions_v3', JSON.stringify(positions));
+    }
+
+    /* =========================================================================
+       4. KHỐI KHÔI PHỤC VỊ TRÍ GỐC (RESET POSITIONS)
+       ========================================================================= */
+    function resetPositions() {
+        localStorage.removeItem('ht_desktop_positions_v3');
+        
+        icons.forEach(icon => {
+            icon.style.position = '';
+            icon.style.left = '';
+            icon.style.top = '';
+            icon.style.margin = '';
+        });
+        
+        initializeLayout();
+    }
+
+    /* =========================================================================
+       5. KHỐI CẤU HÌNH HÌNH NỀN VÀ QUẢN LÝ CỬA SỔ
+       ========================================================================= */
+    function changeBackgroundImage() {
+        var currentUrl = localStorage.getItem("ht_dashboard_bg") || "";
+        var newUrl = prompt(
+            "CẤU HÌNH HÌNH NỀN DESKTOP\n\n" + 
+            "Nhập đường dẫn (URL) hình ảnh Thầy muốn sử dụng làm hình nền:\n" + 
+            "(Để trống và nhấn OK nếu muốn quay về hình nền cổng thông tin mặc định)", 
+            currentUrl
+        );
+
+        if (newUrl !== null) {
+            if (newUrl.trim() === "") {
+                localStorage.removeItem("ht_dashboard_bg");
+                document.documentElement.style.setProperty('--default-bg', "url('https://i.ibb.co/4gCSYHV6/congthongtin1.jpg')");
+            } else {
+                localStorage.setItem("ht_dashboard_bg", newUrl.trim());
+                document.documentElement.style.setProperty('--default-bg', "url('" + newUrl.trim() + "')");
+            }
+        }
+    }
+
+    function toggleUtilities(isShow) {
+        var win = document.getElementById('window-utilities');
+        if (isShow) {
+            win.style.display = 'flex';
+        } else {
+            win.style.display = 'none';
+        }
+    }
+</script>
+</body>
+</html>
