@@ -2,8 +2,6 @@
  * TỆP KẾT NỐI HỆ THỐNG (ketnoi.js)
  * Vị trí lưu trữ: GitHub (Cùng cấp với tệp index.html)
  * Chức năng: Cấu hình tập trung thông tin định danh và địa chỉ máy chủ (API).
- * Nguyên tắc: Khi cần thay đổi Logo, Tên hệ thống hoặc thay đổi Link Web App mới, 
- * quản trị viên chỉ cần chỉnh sửa tại tệp này.
  */
 
 const KETNOI = {
@@ -15,6 +13,8 @@ const KETNOI = {
     LINK_LOGO: "https://i.ibb.co/6R8Y9DNq/logo-l-a-ch-n6.png",
     
     // 3. Đường dẫn máy chủ xử lý dữ liệu (Google Apps Script API)
-    // Lưu ý: Dán URL Web App (doPost) vào trong cặp dấu ngoặc kép bên dưới
-    WEB_APP_URL: "https://script.google.com/macros/s/AKfycbxJEriNwHp3twwlVk_yqViktUo96XOj71ciMdNsNY8TSuH_76t7gPt48DGnWU34gWVdeQ/exec"
+    WEB_APP_URL: "https://script.google.com/macros/s/AKfycbxJEriNwHp3twwlVk_yqViktUo96XOj71ciMdNsNY8TSuH_76t7gPt48DGnWU34gWVdeQ/exec",
+
+    // 4. Mã định danh ứng dụng Google (OAuth 2.0 Client ID)
+    CLIENT_ID: "407480994586-m6fpq6sfcc90qqj9k08rsmi1lge6br94.apps.googleusercontent.com"
 };
