@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #ffffff;
+            margin: 0; padding: 20px;
+        }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 5px; color: #555; }
+        .form-input, .form-select {
+            width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; box-sizing: border-box;
+        }
+        .input-group { display: flex; gap: 10px; }
+        .btn-picker {
+            background: #F57C00; color: white; border: none; padding: 0 15px; border-radius: 4px; cursor: pointer; font-weight: 600; white-space: nowrap;
+        }
+        .btn-picker:hover { background: #EF6C00; }
+        .btn-action {
+            background-color: #1976D2; color: #ffffff; border: none; padding: 10px 16px; font-size: 14px; font-weight: 600; border-radius: 4px; cursor: pointer; width: 100%; margin-top: 10px;
+        }
+        .btn-action:hover { background-color: #1565C0; }
+        .loading { display: none; text-align: center; color: #1976D2; font-weight: bold; margin-top: 10px; font-size: 13px; }
+    </style>
+</head>
+<body>
+
+    <div class="form-group">
+        <label>Họ và tên (Cột A):</label>
+        <input type="text" id="hs-hoten" class="form-input" placeholder="Nhập họ và tên...">
+    </div>
+
+    <div class="form-group">
+        <label>Giới tính (Cột C):</label>
+        <select id="hs-gioitinh" class="form-select">
+            <option value="">-- Chọn giới tính --</option>
+            <option value="nam">Nam (👨‍🏫)</option>
+            <option value="nữ">Nữ (👩‍🏫)</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Tệp hồ sơ trên Drive (Cột B):</label>
+        <div class="input-group">
+            <input type="text" id="hs-link" class="form-input" placeholder="Link tệp sẽ hiển thị ở đây..." readonly>
+            <button class="btn-picker" onclick="khoiTaoGooglePicker()">Chọn tệp</button>
+        </div>
+    </div>
+
+    <button class="btn-action" onclick="xuLyLuuHoSo()">Lưu Dữ Liệu Hồ Sơ</button>
+    <div id="loading-text" class="loading">Đang xử lý dữ liệu, vui lòng chờ...</div>
+
+    <script src="https://apis.google.com/js/api.js"></script>
+    <script>
+        function khoiTaoGooglePicker() {
+            gapi.load('picker', function() {
+                google.script.run.withSuccessHandler(hienThiPicker).layOAuthToken();
+            });
+        }
+
+        function hienThiPicker(token) {
+            if (token) {
+                var picker = new google.picker.PickerBuilder()
+                    .addView(google.picker.ViewId.DOCS) 
+                    .setOAuthToken(token)
+                    .setCallback(xuLyKetQuaPicker)
+                    .build();
+                picker.setVisible(true);
+            } else {
+                alert("Không thể xác thực quyền truy cập. Hãy thử lại.");
+            }
+        }
+
+        function xuLyKetQuaPicker(data) {
+            if (data.action == google.picker.Action.PICKED) {
+                document.getElementById('hs-link').value = data.docs[0].url;
+            }
+        }
+
+        function xuLyLuuHoSo() {
+            var hoTen = document.getElementById('hs-hoten').value.trim();
+            var gioiTinh = document.getElementById('hs-gioitinh').value;
+            var link = document.getElementById('hs-link').value.trim();
+
+            if (!hoTen || !gioiTinh || !link) {
+                alert("Yêu cầu nhập đầy đủ Họ tên, Giới tính và Chọn tệp hồ sơ!");
+                return;
+            }
+
+            document.getElementById('loading-text').style.display = 'block';
+
+            google.script.run
+                .withSuccessHandler(function(response) {
+                    document.getElementById('loading-text').style.display = 'none';
+                    if(response === 'success') {
+                        alert("Gán hồ sơ thành công!");
+                        // Ra lệnh cho index.html (trang cha) đóng hộp thoại và tải lại desktop
+                        window.parent.postMessage('reload_desktop', '*'); 
+                    } else {
+                        alert("Có lỗi xảy ra: " + response);
+                    }
+                })
+                .ghiDuLieuHoSoMoi(hoTen, link, gioiTinh);
+        }
+    </script>
+</body>
+</html>
