@@ -108,6 +108,15 @@
         .pq-table tr:hover { background: #f3e5f5; }
         .action-link { color: #1976D2; cursor: pointer; font-weight: 600; margin-right: 10px; text-decoration: underline; }
         .action-link.delete { color: #d32f2f; }
+
+        /* Khối UI Cảnh báo Bảo mật */
+        #window-alert .window-container { width: 420px; height: auto; }
+        #window-alert .window-titlebar { background-color: #ffebee; border-bottom: 1px solid #ffcdd2; }
+        #window-alert .window-title { color: #c62828; }
+        #window-alert .alert-content { padding: 30px 20px; text-align: center; }
+        #window-alert .alert-icon { font-size: 54px; color: #d32f2f; margin-bottom: 15px; }
+        #window-alert .alert-heading { margin: 0 0 10px 0; color: #333; font-size: 18px; }
+        #window-alert .alert-message { font-size: 14px; color: #555; line-height: 1.5; margin-bottom: 25px; }
     </style>
 </head>
 <body>
@@ -303,8 +312,7 @@
                     <div class="form-group">
                         <label>Cấp quyền mở Hồ sơ/Icon (Đánh dấu x):</label>
                         <div class="checkbox-group" id="icon-permission-list" style="max-height: 200px; overflow-y: auto;">
-                            <!-- Danh sách Icon sẽ được nạp tự động bằng mã JS -->
-                        </div>
+                            </div>
                     </div>
                     <button class="form-native btn-submit" style="background-color: #8E24AA;" onclick="saveUser()">Lưu Cập Nhật</button>
                     <button class="form-native btn-submit" style="background-color: #757575;" onclick="clearUserForm()">Làm Mới Form</button>
@@ -326,12 +334,28 @@
         </div>
     </div>
 
+    <div id="window-alert" class="window-overlay">
+        <div class="window-container">
+            <div class="window-titlebar">
+                <div class="window-title"><span class="material-icons">warning</span> Cảnh báo Bảo mật</div>
+                <button class="window-close" onclick="closeAlertModal()">✕</button>
+            </div>
+            <div class="alert-content">
+                <span class="material-icons alert-icon">gpp_bad</span>
+                <h3 class="alert-heading">Hệ thống từ chối truy cập</h3>
+                <div id="alert-message" class="alert-message"></div>
+                <button class="form-native btn-submit" style="background-color: #d32f2f; width: 120px; margin: 0 auto;" onclick="closeAlertModal()">Đã hiểu</button>
+            </div>
+        </div>
+    </div>
+
 <script>
     let icons = []; let isDragging = false; const tooltip = document.getElementById('win-tooltip'); const desktopArea = document.getElementById('desktop-area');
     let tokenClient; let pickerAccessToken = null;
-    let globalProfiles = []; // Lưu trữ tạm danh sách hồ sơ để dùng cho Cửa sổ Xóa
-    let sysRoles = "";       // BẢO MẬT: Lưu quyền hệ thống của phiên làm việc
-    let sysIconRoles = "";   // BẢO MẬT: Lưu quyền Icon của phiên làm việc
+    let globalProfiles = []; 
+    // Khai báo 2 biến toàn cục để lưu trữ quyền nhận về từ Máy chủ
+    let sysRoles = "";       
+    let sysIconRoles = "";   
 
     /* =========================================================================
        0. KHỐI XÁC THỰC GOOGLE VÀ NẠP DỮ LIỆU CHÍNH DANH
@@ -367,6 +391,7 @@
         }).then(response => response.json()).then(result => {
             if (result.status === 'success') { 
                 document.getElementById('sys-name').innerText = result.verifiedEmail; 
+                // Nạp quyền vào biến toàn cục ngay khi hệ thống tải xong
                 sysRoles = result.roles || "";
                 sysIconRoles = result.iconRoles || "";
                 renderIconsFromData(result.data); apDungPhanQuyen(sysRoles); 
@@ -585,8 +610,17 @@
     }
 
     /* =========================================================================
-       3. KHỐI TẠO HÌNH NỀN ICON VÀ KIỂM DUYỆT BẢO MẬT
+       3. KHỐI TẠO HÌNH NỀN ICON VÀ KIỂM DUYỆT BẢO MẬT BẰNG UI MỚI
        ========================================================================= */
+    function showAlertModal(message) {
+        document.getElementById('alert-message').innerHTML = message;
+        document.getElementById('window-alert').style.display = 'flex';
+    }
+
+    function closeAlertModal() {
+        document.getElementById('window-alert').style.display = 'none';
+    }
+
     function renderIconsFromData(data) {
         globalProfiles = data; 
         desktopArea.innerHTML = ''; 
@@ -597,7 +631,6 @@
             let bgClass = 'bg-default'; 
 
             switch(type) {
-                // Giáo dục & Hành chính
                 case 'hocsinh': iconContent = '<span class="material-icons">school</span>'; bgClass = 'bg-4'; break;
                 case 'nhansu': iconContent = '<span class="material-icons">groups</span>'; bgClass = 'bg-5'; break;
                 case 'vanban': iconContent = '<span class="material-icons">description</span>'; bgClass = 'bg-2'; break;
@@ -613,14 +646,12 @@
                 case 'csvc': iconContent = '<span class="material-icons">inventory</span>'; bgClass = 'bg-6'; break;
                 case 'thuvien': iconContent = '<span class="material-icons">local_library</span>'; bgClass = 'bg-4'; break;
                 case 'doandoi': iconContent = '<span class="material-icons">flag</span>'; bgClass = 'bg-1'; break;
-                // Công nghệ & Kỹ thuật
                 case 'caidat': iconContent = '<span class="material-icons">settings</span>'; bgClass = 'bg-9'; break;
                 case 'congnghe': iconContent = '<span class="material-icons">memory</span>'; bgClass = 'bg-9'; break;
                 case 'mang': iconContent = '<span class="material-icons">wifi</span>'; bgClass = 'bg-1'; break;
                 case 'dienthoai': iconContent = '<span class="material-icons">smartphone</span>'; bgClass = 'bg-7'; break;
                 case 'trituemay': iconContent = '<span class="material-icons">smart_toy</span>'; bgClass = 'bg-9'; break;
                 case 'phantich': iconContent = '<span class="material-icons">query_stats</span>'; bgClass = 'bg-10'; break;
-                // Đời sống & Xã hội
                 case 'yte': iconContent = '<span class="material-icons">health_and_safety</span>'; bgClass = 'bg-7'; break;
                 case 'thethao': iconContent = '<span class="material-icons">sports_soccer</span>'; bgClass = 'bg-2'; break;
                 case 'vanhoa': iconContent = '<span class="material-icons">theater_comedy</span>'; bgClass = 'bg-5'; break;
@@ -630,7 +661,6 @@
                 case 'baove': iconContent = '<span class="material-icons">security</span>'; bgClass = 'bg-9'; break;
                 case 'vesinh': iconContent = '<span class="material-icons">cleaning_services</span>'; bgClass = 'bg-3'; break;
                 case 'xeco': iconContent = '<span class="material-icons">directions_car</span>'; bgClass = 'bg-6'; break;
-                // Kinh tế & Ngoại giao
                 case 'doingoai': iconContent = '<span class="material-icons">public</span>'; bgClass = 'bg-1'; break;
                 case 'du_an': iconContent = '<span class="material-icons">rocket_launch</span>'; bgClass = 'bg-8'; break;
                 case 'khoa_hoc': iconContent = '<span class="material-icons">science</span>'; bgClass = 'bg-10'; break;
@@ -645,10 +675,8 @@
                 case 'baohiem': iconContent = '<span class="material-icons">shield</span>'; bgClass = 'bg-10'; break;
                 case 'thue': iconContent = '<span class="material-icons">request_quote</span>'; bgClass = 'bg-8'; break;
                 case 'nangluong': iconContent = '<span class="material-icons">bolt</span>'; bgClass = 'bg-2'; break;
-                // Giới tính & Cá nhân
                 case 'nam': iconContent = '<span class="material-icons">male</span>'; bgClass = 'bg-1'; break;
                 case 'nu': iconContent = '<span class="material-icons">female</span>'; bgClass = 'bg-5'; break;
-                // Khác
                 case 'danso': iconContent = '<span class="material-icons">family_restroom</span>'; bgClass = 'bg-5'; break;
                 case 'tainguyen': iconContent = '<span class="material-icons">forest</span>'; bgClass = 'bg-3'; break;
                 case 'phucvu': iconContent = '<span class="material-icons">room_service</span>'; bgClass = 'bg-7'; break;
@@ -665,17 +693,22 @@
 
             div.innerHTML = `<div class="icon-box ${bgClass}">${iconContent}</div><span class="icon-text">${item.name}</span>`;
             
-            // THUẬT TOÁN BẢO VỆ VÀ KIỂM DUYỆT QUYỀN TRUY CẬP ICON
+            // THUẬT TOÁN KIỂM TRA QUYỀN KHI NHẤP VÀO ICON VÀ GỌI UI CẢNH BÁO
             div.onclick = function() { 
+                // 1. Nếu là Admin toàn quyền (xx) thì cho phép mở tất cả
                 if (sysRoles.includes('xx')) {
                     navigateTo(item.url, true);
                     return;
                 }
-                const allowedIcons = sysIconRoles.split('|');
-                if (allowedIcons.includes(item.name)) {
+                
+                // 2. Nếu không phải Admin, đối chiếu với danh sách quyền đã tải về
+                const allowedIcons = sysIconRoles ? sysIconRoles.split('|') : [];
+                if (allowedIcons.includes(item.name.trim())) {
                     navigateTo(item.url, true);
                 } else {
-                    alert("⛔ HỆ THỐNG TỪ CHỐI TRUY CẬP:\n\nThầy/Cô chưa được cấp quyền mở hồ sơ [" + item.name + "].\nVui lòng liên hệ Quản trị viên để được đánh dấu (x) cấp quyền!");
+                    // 3. Chặn và gọi Cửa sổ UI Cảnh báo thay vì dùng alert()
+                    const warnMsg = "Tài khoản của Thầy/Cô chưa được cấp quyền mở Hồ sơ <b>[" + item.name + "]</b>.<br><br>👉 Vui lòng liên hệ Quản trị viên để được cấp quyền (đánh dấu x)!";
+                    showAlertModal(warnMsg);
                 }
             }; 
 
