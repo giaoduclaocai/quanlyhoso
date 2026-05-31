@@ -54,6 +54,7 @@
         .btn-taskbar { display: flex; align-items: center; gap: 5px; padding: 6px 12px; font-size: 13px; font-weight: 600; color: #fff; border: none; border-radius: 5px; cursor: pointer; transition: background 0.2s; }
         .btn-taskbar.blue { background-color: #1976D2; } .btn-taskbar.blue:hover { background-color: #1565C0; }
         .btn-taskbar.green { background-color: #388E3C; } .btn-taskbar.green:hover { background-color: #2E7D32; }
+        .btn-taskbar.purple { background-color: #8E24AA; } .btn-taskbar.purple:hover { background-color: #6A1B9A; }
         .btn-taskbar .material-icons { font-size: 16px; }
 
         .tray-icon { width: 36px; height: 36px; display: flex; justify-content: center; align-items: center; border-radius: 4px; cursor: pointer; transition: background 0.2s; }
@@ -68,6 +69,7 @@
         
         #window-utilities .window-container { width: 85vw; height: 85vh; }
         #window-gan-hoso .window-container { width: 440px; height: auto; }
+        #window-phanquyen .window-container { width: 80vw; height: 80vh; max-width: 1000px;} /* Cửa sổ Phân quyền */
 
         @keyframes popIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         .window-titlebar { background: #e0e0e0; padding: 8px 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #cccccc; }
@@ -102,11 +104,14 @@
         </div>
         
         <div class="system-tray">
-            <button class="btn-taskbar blue" onclick="window.open('https://drive.google.com/drive/my-drive', '_blank')">
+            <button class="btn-taskbar blue" id="btn-create-profile" style="display:none;" onclick="window.open('https://drive.google.com/drive/my-drive', '_blank')">
                 <span class="material-icons">add_to_drive</span> Tạo hồ sơ
             </button>
-            <button class="btn-taskbar green" onclick="toggleHoSoModal(true)">
+            <button class="btn-taskbar green" id="btn-assign-profile" style="display:none;" onclick="toggleHoSoModal(true)">
                 <span class="material-icons">attachment</span> Gán hồ sơ
+            </button>
+            <button class="btn-taskbar purple" id="btn-auth-profile" style="display:none;" onclick="togglePhanQuyenModal(true)">
+                <span class="material-icons">manage_accounts</span> Cấp quyền
             </button>
 
             <div class="tray-icon" onclick="resetPositions()" title="Khôi phục vị trí gốc của các biểu tượng">
@@ -117,6 +122,9 @@
             </div>
             <div class="tray-icon" onclick="changeBackgroundImage()" title="Cấu hình Hình nền Desktop">
                 <span class="material-icons">wallpaper</span>
+            </div>
+            <div class="tray-icon" onclick="dangXuat()" title="Đăng xuất / Chuyển tài khoản xác thực">
+                <span class="material-icons">logout</span>
             </div>
             <div class="clock-container" id="sys-clock">
                 --:--<br>--/--/----
@@ -132,9 +140,9 @@
                 <div class="window-title">
                     <span class="material-icons">build_circle</span> Tiện ích dạy học
                 </div>
-                <button class="window-close" onclick="toggleUtilities(false)" title="Đóng cửa sổ">✕</button>
+                <button class="window-close" onclick="toggleUtilities(false)">✕</button>
             </div>
-            <iframe src="tienich.html" class="window-content" title="Tiện ích"></iframe>
+            <iframe src="tienich.html" class="window-content"></iframe>
         </div>
     </div>
 
@@ -144,7 +152,7 @@
                 <div class="window-title">
                     <span class="material-icons">attachment</span> Công cụ Gán Hồ sơ
                 </div>
-                <button class="window-close" onclick="toggleHoSoModal(false)" title="Đóng cửa sổ">✕</button>
+                <button class="window-close" onclick="toggleHoSoModal(false)">✕</button>
             </div>
             <div class="form-native">
                 <div class="form-group">
@@ -155,16 +163,14 @@
                 <div class="form-group">
                     <label>Tệp hồ sơ trên Drive (Cột B): <span style="color: red;">*</span></label>
                     <input type="text" id="hs-link" placeholder="Dán link thủ công hoặc chọn từ hệ thống..." style="margin-bottom: 8px;">
-                    
                     <div class="input-group">
                         <button class="btn-picker" onclick="khoiTaoGooglePicker()" title="Dùng tài khoản đang đăng nhập">
                             <span class="material-icons" style="font-size: 16px;">folder_shared</span> TK Mặc định
                         </button>
-                        <button class="btn-picker" style="background: #546E7A;" onclick="moDriveTaiKhoanKhac()" title="Chọn từ tài khoản Google khác">
+                        <button class="btn-picker" style="background: #546E7A;" onclick="moDriveTaiKhoanKhac()">
                             <span class="material-icons" style="font-size: 16px;">switch_account</span> TK Khác
                         </button>
                     </div>
-                    
                     <div id="huong-dan-tk" style="display:none; font-size: 12px; color: #c62828; margin-top: 8px; background: #ffebee; padding: 8px; border-radius: 4px; line-height: 1.4;">
                         <b>Hướng dẫn:</b> Hệ thống vừa mở trang Chọn Tài Khoản. Thầy hãy vào đúng tài khoản, copy đường link của thư mục hồ sơ và dán vào ô trống phía trên.
                     </div>
@@ -178,10 +184,21 @@
                         <option value="xx">Nữ (xx)</option>
                     </select>
                 </div>
-                
                 <button class="btn-submit" onclick="xuLyLuuHoSo()">Lưu Dữ Liệu Hồ Sơ</button>
                 <div id="form-status" class="status-text">Đang xử lý, vui lòng chờ...</div>
             </div>
+        </div>
+    </div>
+
+    <div id="window-phanquyen" class="window-overlay">
+        <div class="window-container">
+            <div class="window-titlebar">
+                <div class="window-title">
+                    <span class="material-icons">manage_accounts</span> Cấp quyền Hệ thống
+                </div>
+                <button class="window-close" onclick="togglePhanQuyenModal(false)">✕</button>
+            </div>
+            <iframe id="iframe-phanquyen" src="" class="window-content" title="Phân quyền"></iframe>
         </div>
     </div>
 
@@ -192,36 +209,93 @@
     const desktopArea = document.getElementById('desktop-area');
 
     /* =========================================================================
-       0. KHỐI TƯƠNG TÁC API VỚI GOOGLE APPS SCRIPT
+       0. KHỐI TƯƠNG TÁC API & XÁC THỰC BẢO MẬT
        ========================================================================= */
     function loadDesktopData() {
+        // Kiểm tra định danh người dùng
+        let userEmail = localStorage.getItem('ht_user_email');
+        if (!userEmail) {
+            userEmail = prompt("HỆ THỐNG BẢO MẬT\n\nVui lòng nhập Email công vụ của Thầy/Cô để xác thực quyền truy cập:");
+            if (userEmail && userEmail.trim() !== "") {
+                localStorage.setItem('ht_user_email', userEmail.trim().toLowerCase());
+            } else {
+                alert("Thầy/Cô đang truy cập với quyền Khách (Chỉ xem dữ liệu).");
+                userEmail = "guest";
+            }
+        }
+
         fetch(KETNOI.WEB_APP_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-            body: JSON.stringify({ action: 'getIcons' }) 
+            body: JSON.stringify({ action: 'initApp', email: userEmail }) 
         })
         .then(response => response.json())
         .then(result => {
-            if (result.status === 'success') { renderIconsFromData(result.data); } 
+            if (result.status === 'success') { 
+                renderIconsFromData(result.data); 
+                apDungPhanQuyen(result.roles || ""); // Gọi hàm kiểm tra hiển thị nút
+            } 
         })
         .catch(error => console.error("Lỗi:", error));
     }
 
+    // THUẬT TOÁN ĐIỀU KHIỂN HIỂN THỊ NÚT BẤM DỰA TRÊN QUYỀN
+    function apDungPhanQuyen(roles) {
+        const btnCreate = document.getElementById('btn-create-profile');
+        const btnAssign = document.getElementById('btn-assign-profile');
+        const btnAuth   = document.getElementById('btn-auth-profile');
+
+        btnCreate.style.display = 'none';
+        btnAssign.style.display = 'none';
+        btnAuth.style.display = 'none';
+
+        // Quy ước: 'xx' là quyền Admin cao nhất, có thể thấy toàn bộ các nút
+        if (roles.includes('xx')) {
+            btnCreate.style.display = 'flex';
+            btnAssign.style.display = 'flex';
+            btnAuth.style.display = 'flex';
+        } else {
+            // Phân quyền chi tiết
+            if (roles.includes('taohoso')) btnCreate.style.display = 'flex';
+            if (roles.includes('ganhoso')) btnAssign.style.display = 'flex';
+        }
+    }
+
+    function dangXuat() {
+        if(confirm("Thầy/Cô có chắc chắn muốn đăng xuất tài khoản hiện tại khỏi trình duyệt này?")) {
+            localStorage.removeItem('ht_user_email');
+            location.reload();
+        }
+    }
+
     window.addEventListener("DOMContentLoaded", function() { loadDesktopData(); });
+
+    // Lắng nghe tín hiệu làm mới từ PhanQuyen.html
+    window.addEventListener('message', function(event) {
+        if (event.data === 'reload_desktop') {
+            toggleHoSoModal(false);
+            loadDesktopData(); 
+        }
+    });
 
     function toggleHoSoModal(isShow) {
         document.getElementById('window-gan-hoso').style.display = isShow ? 'flex' : 'none';
         if(!isShow) {
-            var elHoTen = document.getElementById('hs-hoten');
-            var elLink = document.getElementById('hs-link');
-            var elGioiTinh = document.getElementById('hs-gioitinh');
-
-            // Xóa dữ liệu và Reset cảnh báo màu đỏ khi đóng UI
-            elHoTen.value = ''; elHoTen.style.borderColor = '#ccc';
-            elLink.value = ''; elLink.style.borderColor = '#ccc';
-            elGioiTinh.value = ''; elGioiTinh.style.borderColor = '#ccc';
+            var elHoTen = document.getElementById('hs-hoten'); var elLink = document.getElementById('hs-link'); var elGioiTinh = document.getElementById('hs-gioitinh');
+            elHoTen.value = ''; elHoTen.style.borderColor = '#ccc'; elLink.value = ''; elLink.style.borderColor = '#ccc'; elGioiTinh.value = ''; elGioiTinh.style.borderColor = '#ccc';
             document.getElementById('huong-dan-tk').style.display = 'none'; 
         }
+    }
+
+    function togglePhanQuyenModal(isShow) {
+        var win = document.getElementById('window-phanquyen');
+        var iframe = document.getElementById('iframe-phanquyen');
+        if (isShow) {
+            if (iframe.getAttribute('src') === "" || iframe.getAttribute('src') === null) { 
+                iframe.src = "PhanQuyen.html"; 
+            }
+            win.style.display = 'flex';
+        } else { win.style.display = 'none'; }
     }
 
     function moDriveTaiKhoanKhac() {
@@ -231,230 +305,107 @@
 
     function khoiTaoGooglePicker() {
         const statusText = document.getElementById('form-status');
-        statusText.innerText = "Đang kết nối không gian Drive...";
-        statusText.style.display = 'block';
-
+        statusText.innerText = "Đang kết nối không gian Drive..."; statusText.style.display = 'block';
         document.getElementById('window-gan-hoso').style.display = 'none';
 
         fetch(KETNOI.WEB_APP_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
             body: JSON.stringify({ action: 'getToken' })
-        })
-        .then(response => response.json())
-        .then(result => {
+        }).then(response => response.json()).then(result => {
             statusText.style.display = 'none';
             if (result.status === 'success' && result.token) {
                 gapi.load('picker', function() {
-                    var folderView = new google.picker.DocsView(google.picker.ViewId.FOLDERS)
-                        .setIncludeFolders(true)
-                        .setSelectFolderEnabled(true);
-
+                    var folderView = new google.picker.DocsView(google.picker.ViewId.FOLDERS).setIncludeFolders(true).setSelectFolderEnabled(true);
                     var picker = new google.picker.PickerBuilder()
-                        .enableFeature(google.picker.Feature.SUPPORT_DRIVES) 
-                        .addView(folderView) 
-                        .addView(google.picker.ViewId.DOCS) 
-                        .setOAuthToken(result.token)
+                        .enableFeature(google.picker.Feature.SUPPORT_DRIVES).addView(folderView).addView(google.picker.ViewId.DOCS).setOAuthToken(result.token)
                         .setCallback(function(data) {
                             if (data.action == google.picker.Action.PICKED) {
-                                var elLink = document.getElementById('hs-link');
-                                elLink.value = data.docs[0].url;
-                                elLink.style.borderColor = '#ccc'; // Xóa viền đỏ nếu chọn thành công
-                                document.getElementById('window-gan-hoso').style.display = 'flex';
-                            } else if (data.action == google.picker.Action.CANCEL) {
-                                document.getElementById('window-gan-hoso').style.display = 'flex';
-                            }
-                        })
-                        .build();
-                    picker.setVisible(true);
+                                var elLink = document.getElementById('hs-link'); elLink.value = data.docs[0].url; elLink.style.borderColor = '#ccc'; document.getElementById('window-gan-hoso').style.display = 'flex';
+                            } else if (data.action == google.picker.Action.CANCEL) { document.getElementById('window-gan-hoso').style.display = 'flex'; }
+                        }).build(); picker.setVisible(true);
                 });
-            } else {
-                alert("Lỗi kết nối Drive. Vui lòng thử lại.");
-                document.getElementById('window-gan-hoso').style.display = 'flex'; 
-            }
-        })
-        .catch(err => {
-            alert("Lỗi mạng: " + err);
-            document.getElementById('window-gan-hoso').style.display = 'flex'; 
-        });
+            } else { alert("Lỗi kết nối Drive. Vui lòng thử lại."); document.getElementById('window-gan-hoso').style.display = 'flex'; }
+        }).catch(err => { alert("Lỗi mạng: " + err); document.getElementById('window-gan-hoso').style.display = 'flex'; });
     }
 
-    // THUẬT TOÁN KIỂM TRA DỮ LIỆU BẮT BUỘC (VALIDATION) TRƯỚC KHI LƯU
     function xuLyLuuHoSo() {
-        var elHoTen = document.getElementById('hs-hoten');
-        var elLink = document.getElementById('hs-link');
-        var elGioiTinh = document.getElementById('hs-gioitinh');
+        var elHoTen = document.getElementById('hs-hoten'); var elLink = document.getElementById('hs-link'); var elGioiTinh = document.getElementById('hs-gioitinh');
+        var hoTen = elHoTen.value.trim(); var link = elLink.value.trim(); var gioiTinh = elGioiTinh.value;
 
-        var hoTen = elHoTen.value.trim();
-        var link = elLink.value.trim();
-        var gioiTinh = elGioiTinh.value;
-
-        // Đặt lại viền mặc định
-        elHoTen.style.borderColor = '#ccc';
-        elLink.style.borderColor = '#ccc';
-        elGioiTinh.style.borderColor = '#ccc';
-
+        elHoTen.style.borderColor = '#ccc'; elLink.style.borderColor = '#ccc'; elGioiTinh.style.borderColor = '#ccc';
         var hasError = false;
-
-        // Kiểm tra từng trường, nếu trống thì đổi viền sang đỏ
         if (!hoTen) { elHoTen.style.borderColor = 'red'; hasError = true; }
         if (!link) { elLink.style.borderColor = 'red'; hasError = true; }
         if (!gioiTinh) { elGioiTinh.style.borderColor = 'red'; hasError = true; }
+        if (hasError) { alert("Yêu cầu bắt buộc: Vui lòng điền đầy đủ thông tin!"); return; }
 
-        if (hasError) {
-            alert("Yêu cầu bắt buộc: Thầy/Cô vui lòng điền đầy đủ Họ tên, Giới tính và Cung cấp link tệp hồ sơ trước khi lưu dữ liệu!");
-            return; // Chặn quá trình lưu
-        }
-
-        const statusText = document.getElementById('form-status');
-        statusText.innerText = "Đang lưu dữ liệu vào hệ thống...";
-        statusText.style.display = 'block';
-
+        const statusText = document.getElementById('form-status'); statusText.innerText = "Đang lưu dữ liệu..."; statusText.style.display = 'block';
         fetch(KETNOI.WEB_APP_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
             body: JSON.stringify({ action: 'saveProfile', hoTen: hoTen, link: link, gioiTinh: gioiTinh })
-        })
-        .then(response => response.json())
-        .then(result => {
+        }).then(response => response.json()).then(result => {
             statusText.style.display = 'none';
-            if (result.status === 'success') {
-                alert("Gán hồ sơ thành công!");
-                toggleHoSoModal(false);
-                loadDesktopData(); 
-            } else { alert("Lỗi ghi dữ liệu: " + result.message); }
+            if (result.status === 'success') { alert("Gán hồ sơ thành công!"); toggleHoSoModal(false); loadDesktopData(); } else { alert("Lỗi ghi dữ liệu: " + result.message); }
         });
     }
 
     function renderIconsFromData(data) {
         desktopArea.innerHTML = ''; 
-        
         data.forEach((item, index) => {
-            let gender = item.gender;
-            let iconContent = '<span class="material-icons">folder</span>';
-            let bgClass = 'bg-' + ((index % 10) + 1);
-
-            if (gender === 'nam' || gender === 'x') {
-                iconContent = '<span style="font-size: 32px;">👨‍🏫</span>'; bgClass = 'bg-1'; 
-            } else if (gender === 'nữ' || gender === 'nu' || gender === 'xx') {
-                iconContent = '<span style="font-size: 32px;">👩‍🏫</span>'; bgClass = 'bg-5'; 
-            }
-
-            const div = document.createElement('div');
-            div.className = 'desktop-icon'; div.setAttribute('data-id', index + 1); div.setAttribute('data-desc', 'Nhấn để mở liên kết thư mục');
+            let gender = item.gender; let iconContent = '<span class="material-icons">folder</span>'; let bgClass = 'bg-' + ((index % 10) + 1);
+            if (gender === 'nam' || gender === 'x') { iconContent = '<span style="font-size: 32px;">👨‍🏫</span>'; bgClass = 'bg-1'; } else if (gender === 'nữ' || gender === 'nu' || gender === 'xx') { iconContent = '<span style="font-size: 32px;">👩‍🏫</span>'; bgClass = 'bg-5'; }
+            const div = document.createElement('div'); div.className = 'desktop-icon'; div.setAttribute('data-id', index + 1); div.setAttribute('data-desc', 'Nhấn để mở liên kết thư mục');
             div.innerHTML = `<div class="icon-box ${bgClass}">${iconContent}</div><span class="icon-text">${item.name}</span>`;
-            div.onclick = function() { navigateTo(item.url, true); };
-            desktopArea.appendChild(div);
+            div.onclick = function() { navigateTo(item.url, true); }; desktopArea.appendChild(div);
         });
-        
-        icons = document.querySelectorAll('.desktop-icon');
-        setupTooltipEvents();
-        initializeLayout();
-        setupDragEvents();
+        icons = document.querySelectorAll('.desktop-icon'); setupTooltipEvents(); initializeLayout(); setupDragEvents();
     }
 
-    /* =========================================================================
-       1. KHỐI XỬ LÝ ĐIỀU HƯỚNG VÀ TOOLTIP
-       ========================================================================= */
-    function navigateTo(url, isNewTab) {
-        if (isDragging) { isDragging = false; return; }
-        if (isNewTab) { window.open(url, '_blank'); } else { window.location.href = url; }
-    }
+    function navigateTo(url, isNewTab) { if (isDragging) { isDragging = false; return; } if (isNewTab) { window.open(url, '_blank'); } else { window.location.href = url; } }
 
     function setupTooltipEvents() {
         icons.forEach(icon => {
-            icon.addEventListener('mouseenter', function(e) {
-                if (isDragging) return; tooltip.innerText = this.getAttribute('data-desc'); tooltip.style.opacity = '1';
-            });
-            icon.addEventListener('mousemove', function(e) {
-                tooltip.style.left = (e.clientX + 15) + 'px'; tooltip.style.top = (e.clientY + 15) + 'px';
-            });
+            icon.addEventListener('mouseenter', function(e) { if (isDragging) return; tooltip.innerText = this.getAttribute('data-desc'); tooltip.style.opacity = '1'; });
+            icon.addEventListener('mousemove', function(e) { tooltip.style.left = (e.clientX + 15) + 'px'; tooltip.style.top = (e.clientY + 15) + 'px'; });
             icon.addEventListener('mouseleave', function() { tooltip.style.opacity = '0'; });
         });
     }
 
-    /* =========================================================================
-       2. KHỐI ĐỒNG HỒ VÀ LAYOUT
-       ========================================================================= */
     function updateClock() {
-        const now = new Date();
-        document.getElementById('sys-clock').innerHTML = `${now.toLocaleTimeString('vi-VN', {hour: '2-digit', minute:'2-digit'})}<br>${now.toLocaleDateString('vi-VN', {day: '2-digit', month: '2-digit', year: 'numeric'})}`;
-    }
-    setInterval(updateClock, 1000); updateClock();
+        const now = new Date(); document.getElementById('sys-clock').innerHTML = `${now.toLocaleTimeString('vi-VN', {hour: '2-digit', minute:'2-digit'})}<br>${now.toLocaleDateString('vi-VN', {day: '2-digit', month: '2-digit', year: 'numeric'})}`;
+    } setInterval(updateClock, 1000); updateClock();
 
     function initializeLayout() {
         const savedPositions = JSON.parse(localStorage.getItem('ht_desktop_positions_v3')) || {};
-        icons.forEach(icon => {
-            const id = icon.getAttribute('data-id');
-            if (savedPositions[id]) { icon.style.position = 'absolute'; icon.style.left = savedPositions[id].left; icon.style.top = savedPositions[id].top; icon.style.margin = '0'; }
-        });
-        setTimeout(() => {
-            icons.forEach(icon => {
-                if (icon.style.position !== 'absolute') {
-                    const rect = icon.getBoundingClientRect(); const areaRect = desktopArea.getBoundingClientRect();
-                    icon.style.left = (rect.left - areaRect.left) + 'px'; icon.style.top = (rect.top - areaRect.top) + 'px';
-                }
-            });
-            icons.forEach(icon => { icon.style.position = 'absolute'; icon.style.margin = '0'; });
-        }, 50);
+        icons.forEach(icon => { const id = icon.getAttribute('data-id'); if (savedPositions[id]) { icon.style.position = 'absolute'; icon.style.left = savedPositions[id].left; icon.style.top = savedPositions[id].top; icon.style.margin = '0'; } });
+        setTimeout(() => { icons.forEach(icon => { if (icon.style.position !== 'absolute') { const rect = icon.getBoundingClientRect(); const areaRect = desktopArea.getBoundingClientRect(); icon.style.left = (rect.left - areaRect.left) + 'px'; icon.style.top = (rect.top - areaRect.top) + 'px'; } }); icons.forEach(icon => { icon.style.position = 'absolute'; icon.style.margin = '0'; }); }, 50);
     }
 
     let draggedIcon = null, offsetX = 0, offsetY = 0, dragThresholdPassed = false, startX, startY;
     function setupDragEvents() { icons.forEach(icon => { icon.addEventListener('mousedown', startDrag); icon.addEventListener('touchstart', startDrag, {passive: false}); }); }
 
     function startDrag(e) {
-        if (e.target.closest('.icon-box') === null && e.target.closest('.icon-text') === null && e.target !== this) return;
-        dragThresholdPassed = false; draggedIcon = this;
-        const clientX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX; const clientY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY;
-        startX = clientX; startY = clientY;
-        const rect = draggedIcon.getBoundingClientRect(); offsetX = clientX - rect.left; offsetY = clientY - rect.top;
-        tooltip.style.opacity = '0'; 
-        document.addEventListener('mousemove', drag); document.addEventListener('touchmove', drag, {passive: false});
-        document.addEventListener('mouseup', stopDrag); document.addEventListener('touchend', stopDrag);
+        if (e.target.closest('.icon-box') === null && e.target.closest('.icon-text') === null && e.target !== this) return; dragThresholdPassed = false; draggedIcon = this;
+        const clientX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX; const clientY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY; startX = clientX; startY = clientY;
+        const rect = draggedIcon.getBoundingClientRect(); offsetX = clientX - rect.left; offsetY = clientY - rect.top; tooltip.style.opacity = '0'; 
+        document.addEventListener('mousemove', drag); document.addEventListener('touchmove', drag, {passive: false}); document.addEventListener('mouseup', stopDrag); document.addEventListener('touchend', stopDrag);
     }
 
     function drag(e) {
         if (!draggedIcon) return;
         const clientX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX; const clientY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY;
         if (Math.abs(clientX - startX) > 3 || Math.abs(clientY - startY) > 3) { dragThresholdPassed = true; isDragging = true; draggedIcon.style.zIndex = '9999'; draggedIcon.style.opacity = '0.7'; e.preventDefault(); }
-        if (dragThresholdPassed) {
-            const areaRect = desktopArea.getBoundingClientRect();
-            let newLeft = Math.max(0, Math.min(clientX - areaRect.left - offsetX, areaRect.width - draggedIcon.offsetWidth));
-            let newTop = Math.max(0, Math.min(clientY - areaRect.top - offsetY, areaRect.height - draggedIcon.offsetHeight));
-            draggedIcon.style.left = newLeft + 'px'; draggedIcon.style.top = newTop + 'px';
-        }
+        if (dragThresholdPassed) { const areaRect = desktopArea.getBoundingClientRect(); let newLeft = Math.max(0, Math.min(clientX - areaRect.left - offsetX, areaRect.width - draggedIcon.offsetWidth)); let newTop = Math.max(0, Math.min(clientY - areaRect.top - offsetY, areaRect.height - draggedIcon.offsetHeight)); draggedIcon.style.left = newLeft + 'px'; draggedIcon.style.top = newTop + 'px'; }
     }
 
     function stopDrag(e) {
-        if (!draggedIcon) return;
-        draggedIcon.style.zIndex = ''; draggedIcon.style.opacity = '1';
-        if (dragThresholdPassed) { savePositions(); }
-        document.removeEventListener('mousemove', drag); document.removeEventListener('touchmove', drag);
-        document.removeEventListener('mouseup', stopDrag); document.removeEventListener('touchend', stopDrag);
-        draggedIcon = null; setTimeout(() => { isDragging = false; }, 50);
+        if (!draggedIcon) return; draggedIcon.style.zIndex = ''; draggedIcon.style.opacity = '1'; if (dragThresholdPassed) { savePositions(); }
+        document.removeEventListener('mousemove', drag); document.removeEventListener('touchmove', drag); document.removeEventListener('mouseup', stopDrag); document.removeEventListener('touchend', stopDrag); draggedIcon = null; setTimeout(() => { isDragging = false; }, 50);
     }
 
-    function savePositions() {
-        const positions = {};
-        icons.forEach(icon => { positions[icon.getAttribute('data-id')] = { left: icon.style.left, top: icon.style.top }; });
-        localStorage.setItem('ht_desktop_positions_v3', JSON.stringify(positions));
-    }
-
-    function resetPositions() {
-        localStorage.removeItem('ht_desktop_positions_v3');
-        icons.forEach(icon => { icon.style.position = ''; icon.style.left = ''; icon.style.top = ''; icon.style.margin = ''; });
-        initializeLayout();
-    }
-
-    function changeBackgroundImage() {
-        var currentUrl = localStorage.getItem("ht_dashboard_bg") || "";
-        var newUrl = prompt("CẤU HÌNH HÌNH NỀN DESKTOP\n\nNhập đường dẫn (URL) hình ảnh:\n(Để trống nếu muốn quay về hình nền mặc định)", currentUrl);
-        if (newUrl !== null) {
-            if (newUrl.trim() === "") { localStorage.removeItem("ht_dashboard_bg"); document.documentElement.style.setProperty('--default-bg', "url('https://i.ibb.co/4gCSYHV6/congthongtin1.jpg')"); } 
-            else { localStorage.setItem("ht_dashboard_bg", newUrl.trim()); document.documentElement.style.setProperty('--default-bg', "url('" + newUrl.trim() + "')"); }
-        }
-    }
-
+    function savePositions() { const positions = {}; icons.forEach(icon => { positions[icon.getAttribute('data-id')] = { left: icon.style.left, top: icon.style.top }; }); localStorage.setItem('ht_desktop_positions_v3', JSON.stringify(positions)); }
+    function resetPositions() { localStorage.removeItem('ht_desktop_positions_v3'); icons.forEach(icon => { icon.style.position = ''; icon.style.left = ''; icon.style.top = ''; icon.style.margin = ''; }); initializeLayout(); }
+    function changeBackgroundImage() { var currentUrl = localStorage.getItem("ht_dashboard_bg") || ""; var newUrl = prompt("CẤU HÌNH HÌNH NỀN DESKTOP\n\nNhập đường dẫn (URL) hình ảnh:\n(Để trống nếu muốn quay về hình nền mặc định)", currentUrl); if (newUrl !== null) { if (newUrl.trim() === "") { localStorage.removeItem("ht_dashboard_bg"); document.documentElement.style.setProperty('--default-bg', "url('https://i.ibb.co/4gCSYHV6/congthongtin1.jpg')"); } else { localStorage.setItem("ht_dashboard_bg", newUrl.trim()); document.documentElement.style.setProperty('--default-bg', "url('" + newUrl.trim() + "')"); } } }
     function toggleUtilities(isShow) { document.getElementById('window-utilities').style.display = isShow ? 'flex' : 'none'; }
 </script>
 </body>
